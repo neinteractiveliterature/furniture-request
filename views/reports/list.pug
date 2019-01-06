@@ -1,0 +1,36 @@
+extends ../layout
+
+block content
+    nav(aria-label="breadcrumb")
+        ol.breadcrumb
+            li.breadcrumb-item.active(aria-current="page") Home
+    h2= title
+    .table-responsive
+        table.table.table-sm.table-hover
+            thead
+                th(style='min-width:180px') Type
+                th Event
+                th(style='min-width:115px') Run
+                th(style='min-width:230px') Room(s)
+                th(style='min-width:130px') Request Entered
+            tbody
+                for run in runs
+                    if (run.event.category !== 'volunteer_event')
+                        tr.clickable-row(
+                            data-click-object='requests'
+                            data-click-id=run.event.id+'/'+run.id
+                            class= (run.no_furniture || run.requests.length)?'table-success':'table-danger'
+                        )
+                            td= humanize(run.event.category)
+                            td= run.event.title
+                            td= moment(run.starts_at).format('ddd, h:mm A')
+                            td= _.pluck(run.rooms, 'name').join(', ')
+                            td= (run.no_furniture || run.requests.length)?'Yes':'No'
+                                - if (checkPermission('gm_liaison'))
+                                    a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id)
+                                        i.fa.fa-edit
+                                        |  Edit
+
+    .card
+        .card-body
+            pre= JSON.stringify(runs, null, 2)

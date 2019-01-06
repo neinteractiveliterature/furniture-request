@@ -1,0 +1,22 @@
+extends ../layout
+
+block content
+    nav(aria-label="breadcrumb")
+        ol.breadcrumb
+            li.breadcrumb-item
+                a(href='/') Home
+            li.breadcrumb-item
+                a(href='/furniture') Furniture
+            li.breadcrumb-item.active(aria-current="page") Create
+
+    .row
+        .col-sm-8.offset-sm-2
+            .card
+                .card-header Create Furniture Item
+                .card-body
+                    form.form.needs-validation(method="POST" action="/furniture" novalidate)
+                        input(type="hidden", name='_csrf',value=csrfToken)
+                        include ./_form.pug
+
+append scripts
+    script(src='/javascripts/validator.js')

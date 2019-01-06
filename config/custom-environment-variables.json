@@ -1,0 +1,17 @@
+{
+    "app": {
+        "dbURL": "DATABASE_URL",
+        "sessionType": "SESSION_TYPE",
+        "sessionSecret": "SESSION_SECRET",
+        "graphqlURL": "INTERCODE_GRAPHQL_URL",
+        "interconBaseURL": "INTERCON_BASE_URL"
+    },
+    "auth": {
+        "authorizationURL": "INTERCODE_URL",
+        "tokenURL": "INTERCODE_TOKEN_URL",
+        "clientID": "INTERCODE_OAUTH_CLIENT_ID",
+        "clientSecret": "INTERCODE_OAUTH_CLIENT_SECRET",
+        "callbackURL": "INTERCODE_CALLBACK_URL"
+    }
+
+}

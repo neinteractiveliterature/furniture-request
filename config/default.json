@@ -1,0 +1,20 @@
+{
+    "app": {
+        "name": "Intercon Furniture Request System",
+        "debug": false,
+        "dbURL": "postgres://furniture:furniture@localhost:5432/furniture",
+        "sessionType": "local",
+        "sessionSecret": "furniture",
+        "graphqlURL": "graphqlURL",
+        "interconBaseURL": "interconBaseURL"
+    },
+    "auth": {
+        "authorizationURL": "authorizationURL",
+        "tokenURL": "tokenURL",
+        "clientID": "clientID",
+        "clientSecret": "clientSecret",
+        "callbackURL": "callbackURL",
+        "scope": "public openid read_signups read_conventions read_profile read_events",
+        "passReqToCallback": true
+    }
+}

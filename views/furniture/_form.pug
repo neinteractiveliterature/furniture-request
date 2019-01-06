@@ -1,0 +1,31 @@
+.form-group
+    label.control-label(for="furniture_name") Name
+    input.form-control(type="text",placeholder="Name",name="furniture[name]",value=furniture.name,id='furniture_name',required)
+    div.invalid-feedback Please choose a valid name for this item
+
+.form-group
+    label.control-label(for="furniture_description") Description
+    textarea.form-control(name="furniture[description]" id="furniture_description")
+        = furniture.description
+
+.form-group
+    label.control-label(for="furniture_max_amount") Max Amount
+    input.form-control(type="number",
+        placeholder="Max Amount",
+        name="furniture[max_amount]",
+        value=furniture.max_amount,
+        id='furniture_max_amount',
+        required)
+    div.invalid-feedback Please provide a number
+
+
+.form-group
+    .form-check
+        input.form-check-input(type="checkbox", name="furniture[internal]",checked=furniture.internal id="furniture_internal")
+        label.form-check-label(for="furniture_internal") Internal Only
+
+.form-group
+    button.btn.btn-primary(type="submit")= furniture.id?'Update':'Create'
+    a.btn.btn-link(href="/furnitures") Cancel
+
+

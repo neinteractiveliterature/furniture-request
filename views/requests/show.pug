@@ -1,0 +1,99 @@
+extends ../layout
+
+block content
+    nav(aria-label="breadcrumb")
+        ol.breadcrumb
+            li.breadcrumb-item
+                a(href='/') Home
+            li.breadcrumb-item.active(aria-current="page")=run.event.title
+                | ,&nbsp;
+                = moment(run.starts_at).format('ddd, h:mm A')
+    .alert.alert-info.alert-dismissible.fade.show
+        p.my-1.
+            Descriptions for items can be viewed by mousing over the item name
+        p.my-1.
+            More information about some of the things on this form is available at the <a class='alert-link' href='#{config.app.interconBaseURL}/pages/gmpolicies#FoodService' target='_blank'> GM Benefits and Policies</a> document.
+        p.my-1.
+           A map of the hotel function space is available at the  <a class='alert-link' href='#{config.app.interconBaseURL}/pages/hotellayout' target='_blank'>Hotel Layout</a> page
+
+        button.close(type="button" data-dismiss="alert" aria-label="Close")
+            span(aria-hidden="true") &times;
+
+    h2= run.event.title
+    h3= moment(run.starts_at).format('ddd, h:mm A')
+    h4= teamMembers(run.event)
+    form.form.needs-validation.my-3(method="POST" action="/requests/"+run.event.id + '/'+run.id novalidate)
+        input(type="hidden", name="_method",  value="PUT")
+        input(type="hidden", name='_csrf',value=csrfToken)
+        for room in run.rooms
+            .row.my-3
+                .col-md-12
+                    .card
+                        h3.card-header= room.name
+                        .card-body
+                            .form-check.pb-3
+                                input.form-check-input(
+                                    type='checkbox'
+                                    name='requests[room-'+room.id +'][no_furniture]'
+                                    checked=(run.no_furniture || requests['room-'+room.id].no_furniture)
+                                    id='requests_'+room.id+'_no_furniture'
+                                )
+                                label.form-check-label(for='request_'+room.id+'_no_furniture')
+                                    | No furniture needed for this room
+                                .form-text.text-muted
+                                    | For events in the Parlors, or for Forum@Intercon events, this indicates that the preset is sufficient
+                            for item in furniture
+                                if ! item.internal
+                                    .row.border-top.py-1
+                                        .col-md-3.offset-md-1
+                                            if item.description
+                                                span.furniture-popover.popup-indicator(
+                                                    data-container="body"
+                                                    data-toggle="popover"
+                                                    data-trigger="hover"
+                                                    data-placement="top"
+                                                    data-content=item.description)= item.name
+                                            else
+                                                span= item.name
+                                        .col-md-3
+                                            input.form-control.form-control-sm(
+                                                type="number"
+                                                min=0
+                                                max=item.max_amount
+                                                placeholder="Quantity up to "+item.max_amount
+                                                name='requests[room-'+room.id +'][furniture][item-'+item.id+']'
+                                                value=requests['room-'+room.id].furniture['item-'+item.id]
+                                            )
+                                            div.invalid-feedback= 'Please choose a value up to ' + item.max_amount
+        .row.my-3
+                .col-md-12
+                    .card
+                        h3.card-header Additional Items
+                        .card-body
+                            h5.card-title
+                                .control-label(for="run_food") Food and Bartending for this Run
+                            .card-text
+                                p.form-text.muted.
+                                    The hotel can provide food or food and bartending service at GM cost. <strong> INTERCON CANNOT PAY FOR THESE SERVICES.</strong> Do you need either of them?
+
+                                p.form-text.muted.
+                                    Please note that these are the ONLY way you can serve food or alcohol at your game. The con suite CANNOT cater your game or event, and NO alcohol is allowed in con space without a hotel bartender present. More information about pricing is available at <a href='#{config.app.interconBaseURL}/pages/gmpolicies#FoodService' target='_blank'> GM Benefits and Policies</a> or contact the <a href='mailto:hotel@interconlarp.org'>Hotel Liaison</a>
+
+                                textarea.form-control(name="run[food]" id="run_food" rows=3)
+                                   = run.food
+                        .card-body
+                            h5.card-title
+                                label.control-label(for="run_notes") Other Notes
+
+                            .card-text
+                                p.form-text.muted.
+                                    Is there anything else we need to know?  Anything not covered by the previous sections, strange requests, and so on?
+                                textarea.form-control(name="run[notes]" id="run_notes" rows=3)
+                                    = run.notes
+        form-group
+            button.btn.btn-primary(type="submit") Save Request
+            a.btn.btn-link(href="/") Cancel
+
+append scripts
+    script(src='/javascripts/validator.js')
+    script(src='/javascripts/requests.js')

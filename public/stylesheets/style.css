@@ -1,0 +1,40 @@
+body {
+  padding-top: 5rem;
+}
+body, .popover {
+    font-family: 'Lato', sans-serif;
+}
+
+.lead, h1, h2, h3, h4, h5, .blockquote {
+    font-family: 'Montserrat', sans-serif;
+}
+#furnitureList .placeholder {
+    border: 1px solid green;
+    background-color: white;
+    -webkit-box-shadow: 0px 0px 10px #888;
+    -moz-box-shadow: 0px 0px 10px #888;
+    box-shadow: 0px 0px 10px #888;
+}
+
+#furnitureList .ui-sortable-helper {
+    display: table;
+}
+
+.popup-indicator{
+    border-bottom: 1px black dashed;
+}
+
+
+.furniture-request{
+    font-size:10pt;
+}
+
+.s-menubar {
+    font-family: 'Montserrat', sans-serif;
+    background:  #C33764;
+    background: -webkit-linear-gradient(to right, #1D2671 #C33764);
+    background: linear-gradient(to bottom right, #1D2671, #C33764);
+    -webkit-box-shadow: 0px 3px 7px 0px rgba(0,0,0,0.4);
+    -moz-box-shadow: 0px 3px 7px 0px rgba(0,0,0,0.4);
+    box-shadow: 0px 3px 7px 0px rgba(0,0,0,0.4);
+}

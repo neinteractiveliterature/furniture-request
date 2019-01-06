@@ -1,0 +1,36 @@
+{
+  "name": "feedbacker",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "async": "^2.6.1",
+    "body-parser": "^1.18.3",
+    "config": "^3.0.0",
+    "connect-redis": "^3.4.0",
+    "cookie-parser": "~1.4.3",
+    "csurf": "^1.9.0",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "express-flash": "0.0.2",
+    "express-session": "^1.15.6",
+    "graphql-request": "^1.8.2",
+    "http-errors": "~1.6.2",
+    "method-override": "^3.0.0",
+    "moment": "^2.22.2",
+    "morgan": "~1.9.0",
+    "oauth": "^0.9.15",
+    "parse-database-url": "^0.3.0",
+    "passport": "^0.4.0",
+    "passport-oauth2": "^1.4.0",
+    "permission": "^1.1.0",
+    "pg": "^7.7.1",
+    "pluralize": "^7.0.0",
+    "pug": "2.0.0-beta11",
+    "redis": "^2.8.0",
+    "underscore": "^1.9.1",
+    "validator": "^10.9.0"
+  }
+}
