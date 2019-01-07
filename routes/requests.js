@@ -91,20 +91,14 @@ function saveRequest(req, res, next){
 
     req.session.requestsData = requests;
     req.session.requestsData.run = runData;
-    console.log(JSON.stringify(requests, null, 2));
     async.parallel({
         run: function(cb){
             no_furniture = true;
             _.keys(requests).forEach(function(room){
-                console.log(requests[room].no_furniture);
-                if (!requests[room].no_furniture){
-
-                    console.log('no_furniture is ' + no_furniture);
+                if (room.match(/^room-/) && !requests[room].no_furniture){
                     no_furniture = false;
                 }
             });
-
-            console.log('no_furniture is ' + no_furniture);
 
             req.models.runs.get(runId, function(err, run){
                 if (err) { return cb(err); }
