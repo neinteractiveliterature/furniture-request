@@ -125,10 +125,10 @@ app.use(function(req, res, next){
     req.intercode = new Intercode(req.session.accessToken);
     req.intercode.getMemberEvents(req.user.intercode_id, function(err, events){
       if (err) {
-        if(err.error === 'invalid_token'){
-           res.logout();
-           delete res.session.accessToken;
-           return redirect(req.originalUrl);
+        if(err.response && err.response.error === 'invalid_token'){
+          req.logout();
+          delete res.session.accessToken;
+          return redirect(req.originalUrl);
         } else {
           return next(err);
         }
