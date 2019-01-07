@@ -111,7 +111,7 @@ var passportClient = new OAuth2Strategy(config.get('auth'),
 
 passportClient.userProfile = function (token, cb) {
   var intercode = new Intercode(token);
-  intercode.getProfile((err, data) => {
+  intercode.getProfile(function(err, data){
     if (err) { return cb(err); }
     cb(null, data.myProfile);
   });

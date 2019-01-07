@@ -91,7 +91,6 @@ function saveRequest(req, res, next){
 
     req.session.requestsData = requests;
     req.session.requestsData.run = runData;
-
     async.parallel({
         run: function(cb){
             no_furniture = true;
@@ -118,6 +117,8 @@ function saveRequest(req, res, next){
                         no_furniture: no_furniture,
                         created_by: req.user.id
                     }, cb);
+                } else {
+                    cb();
                 }
             });
         },
@@ -136,6 +137,8 @@ function saveRequest(req, res, next){
                                 request.amount = amount;
                                 request.created_by = req.user.id;
                                 return req.models.requests.update(request.id, request, cb);
+                            } else {
+                                cb();
                             }
                         } else if (amount && !requests[room].no_furniture){
                             var request = {
