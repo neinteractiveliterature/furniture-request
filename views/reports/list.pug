@@ -28,10 +28,15 @@ block content
                                 if (run.modified)
                                     small= moment(run.modified).format('YYYY-MM-DD h:mm A')
                             td= (run.no_furniture || run.requests.length)?'Yes':'No'
-                                - if (checkPermission('gm_liaison'))
+                                if (checkPermission('gm_liaison'))
                                     a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
                                         i.fa.fa-edit
-                                        |  #{checkPermission('gm_liaison')?'Edit':'View'}
+                                        |  Edit
+                                else if(run.no_furniture || run.requests.length)
+                                    a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
+                                        i.fa.fa-eye
+                                        |  View
+
 
 append scripts
     script(src='/javascripts/data-table.js')

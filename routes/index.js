@@ -10,6 +10,7 @@ function index(req, res, next){
 
 function logout(req, res, next){
     req.logout();
+    delete req.session.accessToken;
     res.redirect('/');
 }
 

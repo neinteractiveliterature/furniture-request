@@ -201,18 +201,23 @@ function saveRequest(req, res, next){
     });
 }
 
-function permissionCheck(req, res, next){
+function isTeamMemberOrGMLiaison(req, res, next){
     var eventId = Number(req.params.eventId);
-    permission({permission: 'event', eventId:eventId}, '/requests')(req, res, next);
+    permission({permission: 'gm_liaison', eventId:eventId}, '/requests')(req, res, next);
 }
+function isTeamMemberOrConcom(req, res, next){
+    var eventId = Number(req.params.eventId);
+    permission({permission: 'con_com', eventId:eventId}, '/requests')(req, res, next);
+}
+
 
 var router = express.Router();
 router.use(funitureHelper.setSection('requests'));
 router.use(permission('login'));
 
 router.get('/', list);
-router.get('/:eventId/:runId', permissionCheck, csrf(), show);
-router.put('/:eventId/:runId', permissionCheck, csrf(), saveRequest);
+router.get('/:eventId/:runId', isTeamMemberOrConcom, csrf(), show);
+router.put('/:eventId/:runId', isTeamMemberOrGMLiaison, csrf(), saveRequest);
 
 module.exports = router;
 

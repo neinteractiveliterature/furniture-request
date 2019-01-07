@@ -31,6 +31,7 @@ block content
                                     name='requests[room-'+room.id +'][no_furniture]'
                                     checked=(run.no_furniture || requests['room-'+room.id].no_furniture)
                                     id='requests_'+room.id+'_no_furniture'
+                                    disabled=checkPermission('gm_liaison', run.event.id)
                                 )
                                 label.form-check-label(for='request_'+room.id+'_no_furniture')
                                     | No furniture needed for this room
@@ -49,15 +50,18 @@ block content
                                         else
                                             span= item.name
                                     .col-md-3
-                                        input.form-control.form-control-sm(
-                                            type="number"
-                                            min=0
-                                            max=item.max_amount
-                                            placeholder="Quantity up to "+item.max_amount
-                                            name='requests[room-'+room.id +'][furniture][item-'+item.id+']'
-                                            value=requests['room-'+room.id].furniture['item-'+item.id]
-                                        )
-                                        div.invalid-feedback= 'Please choose a value up to ' + item.max_amount
+                                        if checkPermission('gm_liaison', run.event.id)
+                                            input.form-control.form-control-sm(
+                                                type="number"
+                                                min=0
+                                                max=item.max_amount
+                                                placeholder="Quantity up to "+item.max_amount
+                                                name='requests[room-'+room.id +'][furniture][item-'+item.id+']'
+                                                value=requests['room-'+room.id].furniture['item-'+item.id]
+                                            )
+                                            div.invalid-feedback= 'Please choose a value up to ' + item.max_amount
+                                        else
+                                            span=requests['room-'+room.id].furniture['item-'+item.id] || 0
         .row.my-3
                 .col-md-12
                     .card
@@ -71,9 +75,13 @@ block content
 
                                 p.form-text.muted.
                                     Please note that these are the ONLY way you can serve food or alcohol at your game. The con suite CANNOT cater your game or event, and NO alcohol is allowed in con space without a hotel bartender present. More information about pricing is available at <a href='#{config.app.interconBaseURL}/pages/gmpolicies#FoodService' target='_blank'> GM Benefits and Policies</a> or contact the <a href='mailto:hotel@interconlarp.org'>Hotel Liaison</a>
+                                if checkPermission('gm_liaison', run.event.id)
+                                    textarea.form-control(name="run[food]" id="run_food" rows=3)
+                                       = run.food
+                                else
+                                    .card
+                                        .card-body= run.food || 'No food requested'
 
-                                textarea.form-control(name="run[food]" id="run_food" rows=3)
-                                   = run.food
                         .card-body
                             h5.card-title
                                 label.control-label(for="run_notes") Other Notes
@@ -81,10 +89,16 @@ block content
                             .card-text
                                 p.form-text.muted.
                                     Is there anything else we need to know?  Anything not covered by the previous sections, strange requests, and so on?
-                                textarea.form-control(name="run[notes]" id="run_notes" rows=3)
-                                    = run.notes
+                                if checkPermission('gm_liaison', run.event.id)
+                                    textarea.form-control(name="run[notes]" id="run_notes" rows=3)
+                                        = run.notes
+                                else
+                                    .card
+                                        .card-body= run.notes|| 'No additional information provided'
+
         form-group
-            button.btn.btn-primary(type="submit") Save Request
+            if checkPermission('gm_liaison', run.event.id)
+                button.btn.btn-primary(type="submit") Save Request
             if backto
                 a.btn.btn-link(href=backto) Cancel
             else

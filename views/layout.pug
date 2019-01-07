@@ -41,7 +41,7 @@ html(lang="en")
                                 a.dropdown-item(href='/reports/list') Runs List
 
                 ul.navbar-nav.float-right
-                    - if (checkPermission('login'))
+                    - if (activeUser)
 
                         li.nav-item.dropdown
                             a.nav-link.dropdown-toggle#userDropdown(
