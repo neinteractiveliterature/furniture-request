@@ -95,9 +95,10 @@ function saveRequest(req, res, next){
     async.parallel({
         run: function(cb){
             no_furniture = true;
-            console.log('no_furniture is ' + no_furniture);
             _.keys(requests).forEach(function(room){
+                console.log(requests[room]);
                 if (!requests[room].no_furniture){
+
                     console.log('no_furniture is ' + no_furniture);
                     no_furniture = false;
                 }
