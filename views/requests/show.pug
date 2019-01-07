@@ -1,30 +1,24 @@
 extends ../layout
 
 block content
-    nav(aria-label="breadcrumb")
-        ol.breadcrumb
-            li.breadcrumb-item
-                a(href='/') Home
-            li.breadcrumb-item.active(aria-current="page")=run.event.title
-                | ,&nbsp;
-                = moment(run.starts_at).format('ddd, h:mm A')
-    .alert.alert-info.alert-dismissible.fade.show
-        p.my-1.
-            Descriptions for items can be viewed by mousing over the item name
-        p.my-1.
-            More information about some of the things on this form is available at the <a class='alert-link' href='#{config.app.interconBaseURL}/pages/gmpolicies#FoodService' target='_blank'> GM Benefits and Policies</a> document.
-        p.my-1.
-           A map of the hotel function space is available at the  <a class='alert-link' href='#{config.app.interconBaseURL}/pages/hotellayout' target='_blank'>Hotel Layout</a> page
+    if ! backto
+        .alert.alert-info.alert-dismissible.fade.show
+            p.my-1.
+                Descriptions for items can be viewed by mousing over the item name
+            p.my-1.
+                More information about some of the things on this form is available at the <a class='alert-link' href='#{config.app.interconBaseURL}/pages/gmpolicies#FoodService' target='_blank'> GM Benefits and Policies</a> document.
+            p.my-1.
+               A map of the hotel function space is available at the  <a class='alert-link' href='#{config.app.interconBaseURL}/pages/hotellayout' target='_blank'>Hotel Layout</a> page
 
-        button.close(type="button" data-dismiss="alert" aria-label="Close")
-            span(aria-hidden="true") &times;
+            button.close(type="button" data-dismiss="alert" aria-label="Close")
+                span(aria-hidden="true") &times;
 
-    h2= run.event.title
-    h3= moment(run.starts_at).format('ddd, h:mm A')
-    h4= teamMembers(run.event)
     form.form.needs-validation.my-3(method="POST" action="/requests/"+run.event.id + '/'+run.id novalidate)
         input(type="hidden", name="_method",  value="PUT")
         input(type="hidden", name='_csrf',value=csrfToken)
+        if (backto)
+            input(type="hidden", name='_backto',value=backto)
+
         for room in run.rooms
             .row.my-3
                 .col-md-12
@@ -91,7 +85,10 @@ block content
                                     = run.notes
         form-group
             button.btn.btn-primary(type="submit") Save Request
-            a.btn.btn-link(href="/") Cancel
+            if backto
+                a.btn.btn-link(href=backto) Cancel
+            else
+                a.btn.btn-link(href="/") Cancel
 
 append scripts
     script(src='/javascripts/validator.js')

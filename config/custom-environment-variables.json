@@ -4,7 +4,8 @@
         "sessionType": "SESSION_TYPE",
         "sessionSecret": "SESSION_SECRET",
         "graphqlURL": "INTERCODE_GRAPHQL_URL",
-        "interconBaseURL": "INTERCON_BASE_URL"
+        "interconBaseURL": "INTERCON_BASE_URL",
+        "redisURL": "REDISTOGO_URL"
     },
     "auth": {
         "authorizationURL": "INTERCODE_URL",

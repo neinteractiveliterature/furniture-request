@@ -7,6 +7,13 @@ var funitureHelper = require('../lib/furniture-helper');
 
 
 function list(req, res, next){
+    res.locals.breadcrumbs = {
+        path: [
+            { url: '/', name: 'Home'},
+            { url: '/reports', name: 'Reports'},
+        ],
+        current: 'List'
+    };
     req.intercode.getEvents(function(err, events){
         if (err) { return next(err); }
         funitureHelper.getRunList(events, function(err, runs){
@@ -20,7 +27,7 @@ function list(req, res, next){
                 });
             }, function(err){
                 if (err) { return next(err); }
-                res.render('reports/list', { title: 'All Furniture Requests' });
+                res.render('reports/list', { pageTitle: 'All Furniture Requests' });
             });
         });
     });
@@ -29,6 +36,10 @@ function list(req, res, next){
 var router = express.Router();
 router.use(funitureHelper.setSection('reports'));
 router.use(permission('con_com'));
+
+router.get('/', function(req, res, next){
+    res.redirect('/reports/list');
+})
 
 router.get('/list', list);
 

@@ -32,10 +32,15 @@ create table runs (
     food text,
     no_furniture boolean default false,
     created_by int not null,
+    created timestamp DEFAULT now(),
     primary key (id),
     foreign key (created_by)
         references users(id)
 );
+
+CREATE TRIGGER update_runs_created BEFORE UPDATE
+    ON runs FOR EACH ROW EXECUTE PROCEDURE
+    update_created_column();
 
 create table requests (
     id serial,

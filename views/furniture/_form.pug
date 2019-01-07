@@ -9,7 +9,7 @@
         = furniture.description
 
 .form-group
-    label.control-label(for="furniture_max_amount") Max Amount
+    label.control-label(for="furniture_max_amount") Maximum Amount
     input.form-control(type="number",
         placeholder="Max Amount",
         name="furniture[max_amount]",
@@ -22,7 +22,7 @@
 .form-group
     .form-check
         input.form-check-input(type="checkbox", name="furniture[internal]",checked=furniture.internal id="furniture_internal")
-        label.form-check-label(for="furniture_internal") Internal Only
+        label.form-check-label(for="furniture_internal") Internal to Intercon Only
 
 .form-group
     button.btn.btn-primary(type="submit")= furniture.id?'Update':'Create'

@@ -2,11 +2,25 @@ var express = require('express');
 var async = require('async');
 var csrf = require('csurf');
 var _ = require('underscore');
+var moment = require('moment');
 var permission = require('../lib/permission');
 var funitureHelper = require('../lib/furniture-helper');
 
+var paths = {
+    list: {
+        path: [
+            { url: '/reports', name: 'Reports' },
+            { url: '/reports/list', name: 'List' }
+        ],
+        backto: '/reports/list'
+    }
+}
 
 function list(req, res, next){
+    res.locals.breadcrumbs = {
+        path: [],
+        current: 'Home'
+    };
     req.intercode.getMemberEvents( req.user.intercode_id, function(err, data){
         if (err) { return next(err); }
         funitureHelper.getRunList(data, function(err, runs){
@@ -20,7 +34,7 @@ function list(req, res, next){
                 });
             }, function(err){
                 if (err) { return next(err); }
-                res.render('requests/index');
+                res.render('requests/index', {pageTitle: 'Requests for ' + req.user.name});
             });
         });
     });
@@ -29,6 +43,7 @@ function list(req, res, next){
 function show(req, res, next){
     var runId = Number(req.params.runId);
     var eventId = Number(req.params.eventId);
+    var backto = req.query.backto;
 
     async.parallel({
         intercode: function(cb){
@@ -79,7 +94,22 @@ function show(req, res, next){
             res.locals.requests = requests;
         }
         res.locals.csrfToken = req.csrfToken();
-        res.render('requests/show');
+        res.locals.breadcrumbs = {
+           path: [
+                { url: '/', name: 'Home'},
+            ],
+            current: res.locals.run.event.title + ' ' + moment(res.locals.run.starts_at).format('ddd, h:mm A')
+        };
+        if (backto && _.has(paths, backto)){
+            res.locals.backto = paths[backto].backto;
+            res.locals.breadcrumbs.path = res.locals.breadcrumbs.path.concat(paths[backto].path);
+        }
+
+        res.render('requests/show', {pageTitle: {
+            h2: res.locals.run.event.title,
+            h3: moment(res.locals.run.starts_at).format('ddd, h:mm A'),
+            h4: funitureHelper.teamMembers(res.locals.run.event)
+        }});
     });
 }
 
@@ -163,7 +193,11 @@ function saveRequest(req, res, next){
         }
         delete req.session.requestsData;
         req.flash('success', 'Saved Request');
-        res.redirect('/requests');
+        if (req.body._backto){
+            res.redirect(req.body._backto);
+        } else {
+            res.redirect('/requests');
+        }
     });
 }
 

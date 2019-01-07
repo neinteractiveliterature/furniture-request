@@ -1,14 +1,6 @@
 extends ../layout
 
 block content
-    nav(aria-label="breadcrumb")
-        ol.breadcrumb
-            li.breadcrumb-item
-                a(href='/') Home
-            li.breadcrumb-item
-                a(href='/furniture') Furniture
-            li.breadcrumb-item.active(aria-current="page")= furniture.name
-
     .row
         .col-sm-8.offset-sm-2
             .card

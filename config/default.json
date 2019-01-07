@@ -6,7 +6,8 @@
         "sessionType": "local",
         "sessionSecret": "furniture",
         "graphqlURL": "graphqlURL",
-        "interconBaseURL": "interconBaseURL"
+        "interconBaseURL": "interconBaseURL",
+        "redisURL": false
     },
     "auth": {
         "authorizationURL": "authorizationURL",

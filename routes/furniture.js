@@ -6,10 +6,16 @@ var funitureHelper = require('../lib/furniture-helper');
 var permission = require('../lib/permission');
 
 function list(req, res, next){
+    res.locals.breadcrumbs = {
+       path: [
+            { url: '/', name: 'Home'},
+        ],
+        current: 'Furniture'
+    };
     req.models.furniture.list(function(err, furnitures){
         if (err) { return next(err); }
         res.locals.furnitures = furnitures || [];
-        res.render('furniture/index', { title: 'Furniture' });
+        res.render('furniture/index', { pageTitle: 'Furniture' });
     });
 }
 
@@ -19,6 +25,13 @@ function showNew(req, res, next){
         description: null,
         max_amount: 10,
         internal: false
+    };
+    res.locals.breadcrumbs = {
+       path: [
+            { url: '/', name: 'Home'},
+            { url: '/furniture', name: 'Furniture'},
+        ],
+        current: 'New'
     };
 
     res.locals.csrfToken = req.csrfToken();
@@ -32,6 +45,7 @@ function showEdit(req, res, next){
     var id = req.params.id;
     res.locals.csrfToken = req.csrfToken();
 
+
     req.models.furniture.get(id, function(err, furniture){
         if (err) { return next(err); }
         res.locals.furniture = furniture;
@@ -39,6 +53,13 @@ function showEdit(req, res, next){
             res.locals.furniture = req.session.furnitureData;
             delete req.session.furnitureData;
         }
+        res.locals.breadcrumbs = {
+           path: [
+                { url: '/', name: 'Home'},
+                { url: '/furniture', name: 'Furniture'},
+            ],
+            current: 'Edit: ' + furniture.name
+        };
 
         res.render('furniture/edit');
     });
