@@ -121,8 +121,7 @@ passport.use(passportClient);
 
 // Setup intercode connection for routes
 app.use(function(req, res, next){
-  if (req.session.accessToken && req.user){
-    console.log(req.user);
+  if (req.session.accessToken && req.user && !req.url.match(/^\/log(in|out)/) ){
     req.intercode = new Intercode(req.session.accessToken);
     req.intercode.getMemberEvents(req.user.intercode_id, function(err, events){
       if (err) { return next(err); }
