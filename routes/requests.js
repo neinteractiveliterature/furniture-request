@@ -96,7 +96,7 @@ function saveRequest(req, res, next){
         run: function(cb){
             no_furniture = true;
             _.keys(requests).forEach(function(room){
-                console.log(requests[room]);
+                console.log(requests[room].no_furniture);
                 if (!requests[room].no_furniture){
 
                     console.log('no_furniture is ' + no_furniture);
