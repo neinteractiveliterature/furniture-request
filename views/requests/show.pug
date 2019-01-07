@@ -26,21 +26,12 @@ block content
                         h3.card-header= room.name
                         .card-body
                             .form-check.pb-3
-                                if checkPermission('gm_liaison', run.event.id)
-                                    input.form-check-input(
-                                        type='checkbox'
-                                        name='requests[room-'+room.id +'][no_furniture]'
-                                        checked=(run.no_furniture || requests['room-'+room.id].no_furniture)
-                                        id='requests_'+room.id+'_no_furniture'
-                                        )
-                                    )
-                                else
-                                    input.form-check-input(
-                                        type='checkbox'
-                                        checked=(run.no_furniture || requests['room-'+room.id].no_furniture)
-                                        id='requests_'+room.id+'_no_furniture'
-                                        disabled
-                                        )
+                                input.form-check-input(
+                                    type='checkbox'
+                                    name='requests[room-'+room.id +'][no_furniture]'
+                                    checked=(run.no_furniture || requests['room-'+room.id].no_furniture)
+                                    id='requests_'+room.id+'_no_furniture'
+                                    disabled=!checkPermission('gm_liaison', run.event.id)
                                     )
                                 label.form-check-label(for='request_'+room.id+'_no_furniture')
                                     | No furniture needed for this room
