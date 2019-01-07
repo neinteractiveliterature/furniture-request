@@ -63,7 +63,7 @@ if (config.get('app.sessionType') === 'redis'){
       var redisToGo   = require('url').parse(process.env.REDISTOGO_URL);
       var redisClient = redis.createClient(redisToGo.port, redisToGo.hostname);
 
-      redisClient.auth(rtg.auth.split(":")[1]);
+      redisClient.auth(redisToGo.auth.split(":")[1]);
 
     } else {
       var redisClient = redis.createClient();
