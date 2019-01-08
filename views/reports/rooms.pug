@@ -1,0 +1,30 @@
+extends ../layout
+
+block content
+    .table-responsive
+        table.table.table-sm.table-hover.table-sorted(data-order='[[ 0, "asc" ],[ 1, "asc" ]]')
+            thead
+                th Room
+                th Category
+                for item in furniture
+                    th=item.name
+
+            tbody
+                for room in rooms
+                    for category in categories
+                        if _.has(room.requests, category)
+                            tr
+                                td=room.name
+                                td=category
+                                for item in furniture
+                                    th=room.requests[category][item.id] || 0
+
+
+    //-.card.my-2
+        .card-body
+            pre= JSON.stringify(rooms, null, 2)
+
+
+
+append scripts
+    script(src='/javascripts/data-table.js')

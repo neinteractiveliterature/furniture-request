@@ -127,6 +127,7 @@ app.use(function(req, res, next){
       if (err) {
         if(err.response && err.response.error === 'invalid_token'){
           req.logout();
+          console.log('deleting token')
           delete req.session.accessToken;
           return res.redirect(req.originalUrl);
         } else {

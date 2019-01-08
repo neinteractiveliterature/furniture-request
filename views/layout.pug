@@ -17,47 +17,50 @@ html(lang="en")
 
     body
         nav.navbar.navbar-expand-md.navbar-dark.bg-dark.fixed-top.s-menubar.mb-4
-            a.navbar-brand(href='/') Furniture Requests
-            button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation")
-                span.navbar-toggler-icon
+            .container
 
-            .collapse.navbar-collapse#navbar
-                ul.navbar-nav.mr-auto
-                    li.nav-item(class= siteSection==='requests'?"active":null)
-                        a.nav-link(href="/") Home
-                            span.sr-only (current)
-                    - if (checkPermission('gm_liaison'))
-                        li.nav-item(class= siteSection==='furniture'?"active":null)
-                            a.nav-link(href='/furniture') Furniture
-                    - if (checkPermission('con_com'))
-                        li.nav-item.dropdown
-                            a.nav-link.dropdown-toggle#reportsDropdown(
-                                href='#'
-                                role='button'
-                                data-toggle='dropdown'
-                                aria-haspopup="true"
-                                aria-expanded="false") Reports
-                            .dropdown-menu(aria-labelledby="reportsDropdown")
-                                a.dropdown-item(href='/reports/list') Runs List
+                a.navbar-brand(href='/') Furniture Requests
+                button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation")
+                    span.navbar-toggler-icon
 
-                ul.navbar-nav.float-right
-                    - if (activeUser)
+                .collapse.navbar-collapse#navbar
+                    ul.navbar-nav.mr-auto
+                        li.nav-item(class= siteSection==='requests'?"active":null)
+                            a.nav-link(href="/") Home
+                                span.sr-only (current)
+                        - if (checkPermission('gm_liaison'))
+                            li.nav-item(class= siteSection==='furniture'?"active":null)
+                                a.nav-link(href='/furniture') Furniture
+                        - if (checkPermission('con_com'))
+                            li.nav-item.dropdown(class= siteSection==='reports'?"active":null)
+                                a.nav-link.dropdown-toggle#reportsDropdown(
+                                    href='#'
+                                    role='button'
+                                    data-toggle='dropdown'
+                                    aria-haspopup="true"
+                                    aria-expanded="false") Reports
+                                .dropdown-menu(aria-labelledby="reportsDropdown")
+                                    a.dropdown-item(href='/reports/list') Runs List
+                                    a.dropdown-item(href='/reports/rooms') Rooms Report
 
-                        li.nav-item.dropdown
-                            a.nav-link.dropdown-toggle#userDropdown(
-                                href='#'
-                                role='button'
-                                data-toggle='dropdown'
-                                aria-haspopup="true"
-                                aria-expanded="false")
-                                span.fa.fa-user
-                                |  #{activeUser.name}
-                            .dropdown-menu(aria-labelledby="userDropdown")
-                                a.dropdown-item(href='/logout') Logout
+                    ul.navbar-nav.float-right
+                        - if (activeUser)
 
-                    - else
-                        li.nav-item
-                            a.nav-link(href='/login') Login
+                            li.nav-item.dropdown
+                                a.nav-link.dropdown-toggle#userDropdown(
+                                    href='#'
+                                    role='button'
+                                    data-toggle='dropdown'
+                                    aria-haspopup="true"
+                                    aria-expanded="false")
+                                    span.fa.fa-user
+                                    |  #{activeUser.name}
+                                .dropdown-menu(aria-labelledby="userDropdown")
+                                    a.dropdown-item(href='/logout') Logout
+
+                        - else
+                            li.nav-item
+                                a.nav-link(href='/login') Login
         - if(breadcrumbs)
             .container(role="breadcrumbs")
                 nav(aria-label='breadcrumb')
