@@ -1,0 +1,36 @@
+extends ../layout
+
+block content
+    .row
+        .col-md-2
+            button.btn.btn-outline-primary.btn-sm#exportCSV
+                i.fa.fa-download
+                |  Download CSV
+
+    .table-responsive
+        table.table.table-sm.table-hover.table-sorted(data-order='[[ 2, "asc" ]]')
+            thead
+                th Type
+                th Event
+                th Run
+                th Room(s)
+                th(style='min-width:300px') Request
+            tbody
+                for run in runs
+                    tr(
+                        data-click-object='requests'
+                        data-click-id=run.event.id+'/'+run.id
+                    )
+                        td
+                            small= humanize(run.event.category)
+                        td= run.event.title
+                        td(data-order=moment(run.starts_at).format(YYYYMMDDHHmmss))= moment(run.starts_at).format('ddd, h:mm A')
+                        td
+                            small= _.pluck(run.rooms, 'name').join(', ')
+
+                        td
+                            .card
+                                .card-body.py-1= run.request
+
+append scripts
+    script(src='/javascripts/data-table.js')

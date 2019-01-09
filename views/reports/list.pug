@@ -1,6 +1,12 @@
 extends ../layout
 
 block content
+    .row
+        .col-md-2
+            button.btn.btn-outline-primary.btn-sm#exportCSV
+                i.fa.fa-download
+                |  Download CSV
+
     .table-responsive
         table.table.table-sm.table-hover.table-sorted(data-order='[[ 2, "asc" ]]')
             thead

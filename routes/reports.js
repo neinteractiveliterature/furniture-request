@@ -2,6 +2,8 @@ var express = require('express');
 var async = require('async');
 var csrf = require('csurf');
 var _ = require('underscore');
+var csv = require('csv');
+var moment = require('moment');
 var permission = require('../lib/permission');
 var furnitureHelper = require('../lib/furniture-helper');
 
@@ -9,38 +11,72 @@ function listReports(req, res, next){
     res.render('reports/index', {pageTitle: 'Furniture Reports'});
 }
 
-function list(req, res, next){
-    res.locals.breadcrumbs = {
-        path: [
-            { url: '/', name: 'Home'},
-            { url: '/reports', name: 'Reports'},
-        ],
-        current: 'List'
-    };
+function listReport(req, res, next){
     req.intercode.getEvents(function(err, events){
         if (err) { return next(err); }
         furnitureHelper.getRunList(events, function(err, runs){
             if (err) { return next(err); }
             res.locals.runs = _.sortBy(runs, "starts_at");
-            res.render('reports/list', { pageTitle: 'All Furniture Requests' });
+            if (req.query.export){
+                var data = [['Event', 'Type', 'Run', 'Room(s)', 'Modified', 'Request Entered']]
+                _.sortBy(runs, "starts_at").forEach(function(run){
+                    if (run.event.category === 'volunteer_event') { return; }
+                    data.push([
+                        run.event.title,
+                        furnitureHelper.humanize(run.event.category),
+                        moment(run.starts_at).format('ddd, h:mm A'),
+                        _.pluck(run.rooms, 'name').join(', '),
+                        moment(run.modified).format('YYYY-MM-DD h:mm A'),
+                        (run.no_furniture || run.requests.length)?'Yes':'No'
+                    ]);
+                });
+                csv.stringify(data, function(err, output){
+                    if (err) { return next(err); }
+                    res.attachment('FoodExport.csv');
+                    return res.end(output);
+                });
+            } else {
+                res.locals.breadcrumbs = getBreadcrumbs('List');
+                res.locals.runs = _.sortBy(runs, "starts_at");
+                res.render('reports/list', { pageTitle: 'All Furniture Requests' });
+            }
         });
     });
 }
 
-function rooms(req, res, next){
-   res.locals.breadcrumbs = {
-        path: [
-            { url: '/', name: 'Home'},
-            { url: '/reports', name: 'Reports'},
-        ],
-        current: 'Room Report'
-    };
+function roomsReport(req, res, next){
     getRoomData(req, function(err, result){
-        res.locals.rooms = result.rooms;
-        res.locals.furniture = result.furniture;
-        res.locals.categories = _.uniq(_.pluck(result.events, 'category'));
-        res.locals.runs = result.runs;
-        res.render('reports/rooms', { pageTitle: 'Room Report'});
+        var categories = _.uniq(_.pluck(result.events, 'category'));
+        if (req.query.export){
+            var data = []
+            var header = ['Room', 'Category'];
+            result.furniture.forEach(function(item){
+                header.push(item.name);
+            });
+            data.push(header);
+            result.rooms.forEach(function(room){
+                categories.forEach(function(category){
+                    if (_.has(room.requests, category)){
+                        var row = [room.name, category];
+                        result.furniture.forEach(function(item){
+                            row.push(room.requests[category][item.id]||0);
+                        });
+                        data.push(row);
+                    }
+                });
+            });
+            csv.stringify(data, function(err, output){
+                if (err) { return next(err); }
+                res.attachment('RoomsExport.csv');
+                return res.end(output);
+            });
+        } else {
+            res.locals.rooms = result.rooms;
+            res.locals.furniture = result.furniture;
+            res.locals.categories = categories;
+            res.locals.breadcrumbs = getBreadcrumbs('Room Report');
+            res.render('reports/rooms', { pageTitle: 'Room Report'});
+        }
     });
 }
 
@@ -80,10 +116,82 @@ function getRoomData(req, cb){
                     });
                 });
             });
-            result.runs = runs;
             cb(null, result);
         });
     });
+}
+
+function foodReport(req, res, next){
+    getRequestData(req, 'food', function(err, runs){
+        if (err) { return next(err); }
+        if (req.query.export){
+            getRequestCSV(runs, function(err, output){
+                if (err) { return next(err); }
+                res.attachment('RunsExport.csv');
+                return res.end(output);
+            });
+        } else {
+            res.locals.runs = runs;
+            res.locals.breadcrumbs = getBreadcrumbs('Food Report');
+            res.render('reports/specialRequests', { pageTitle: 'Food Report' });
+        }
+    });
+}
+
+function specialRequestsReport(req, res, next){
+    getRequestData(req, 'notes', function(err, runs){
+        if (err) { return next(err); }
+        if (req.query.export){
+            getRequestCSV(runs, function(err, output){
+                if (err) { return next(err); }
+                res.attachment('SpecialRequestsExport.csv');
+                return res.end(output);
+            });
+        } else {
+            res.locals.runs = runs;
+            res.locals.breadcrumbs = getBreadcrumbs('Special Requests Report');
+            res.render('reports/specialRequests', { pageTitle: 'Special Requests Report' });
+        }
+    });
+}
+
+function getRequestData(req, type, cb){
+    req.models.runs.list(function(err, runs){
+        if (err) { return next(err); }
+        var filteredRuns = runs.filter((run) => { return run[type] } );
+        async.map(filteredRuns, function(runRequest, cb){
+            req.intercode.getRun(runRequest.event_id, runRequest.id, function(err, run){
+                if (err) { return cb(err); }
+                run.request = runRequest[type];
+                run.no_furniture = runRequest.no_furniture;
+                cb(null, run);
+            });
+        }, cb);
+    });
+}
+
+function getRequestCSV(runs, cb){
+    var data = [['Event', 'Type', 'Run', 'Room(s)', 'Request']]
+        _.sortBy(runs, "starts_at").forEach(function(run){
+            data.push([
+                run.event.title,
+                furnitureHelper.humanize(run.event.category),
+                moment(run.starts_at).format('ddd, h:mm A'),
+                _.pluck(run.rooms, 'name').join(', '),
+                run.request
+            ]);
+        });
+        csv.stringify(data, cb);
+}
+
+function getBreadcrumbs(reportName){
+    return {
+        path: [
+            { url: '/', name: 'Home'},
+            { url: '/reports', name: 'Reports'},
+        ],
+        current: reportName
+    }
 }
 
 
@@ -91,12 +199,11 @@ var router = express.Router();
 router.use(furnitureHelper.setSection('reports'));
 router.use(permission('con_com'));
 
-router.get('/', function(req, res, next){
-    res.redirect('/reports/list');
-})
-
-router.get('/list', list);
-router.get('/rooms', rooms);
+router.get('/', listReports);
+router.get('/list', listReport);
+router.get('/rooms', roomsReport);
+router.get('/food', foodReport);
+router.get('/special', specialRequestsReport);
 
 module.exports = router;
 
