@@ -10,12 +10,13 @@ block content
     .table-responsive
         table.table.table-sm.table-hover.table-sorted(data-order='[[ 2, "asc" ]]')
             thead
-                th Type
-                th Event
-                th Run
-                th Room(s)
-                th(style='min-width:300px') Request
-                th Actions
+                tr
+                    th Type
+                    th Event
+                    th Run
+                    th Room(s)
+                    th(style='min-width:300px') Request
+                    th Actions
             tbody
                 for run in runs
                     tr(
@@ -41,6 +42,14 @@ block content
                                 a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
                                     i.fa.fa-eye
                                     |  View
+            tfoot
+                tr
+                    th Type
+                    th Event
+                    th Run
+                    th Room(s)
+                    th Request
+                    th Actions
 
 append scripts
     script(src='/javascripts/data-table.js')

@@ -7,6 +7,7 @@ $(function(){
     e.preventDefault();
     var object = $(this).attr('data-click-object');
     var id = $(this).attr('data-click-id');
+    console.log('/'+ object + '/' + id);
     window.location.href='/'+ object + '/' + id;
   });
   $(".table-sorted").show();

@@ -75,12 +75,37 @@ function roomsReport(req, res, next){
             res.locals.furniture = result.furniture;
             res.locals.categories = categories;
             res.locals.breadcrumbs = getBreadcrumbs('Room Report');
-            res.render('reports/rooms', { pageTitle: 'Room Report'});
+            res.render('reports/roomsSummary', { pageTitle: 'Room Report'});
         }
     });
 }
 
-function getRoomData(req, cb){
+function roomList(req, res, next){
+    var roomId = Number(req.params.id);
+    getRoomData(req, roomId, function(err, result){
+        var room = _.findWhere(result.rooms, {id: roomId});
+        var categories = _.uniq(_.pluck(result.events, 'category'));
+        res.locals.room = room;
+        res.locals.furniture = result.furniture;
+        res.locals.categories = categories;
+        res.locals.breadcrumbs = getBreadcrumbs(room.name);
+        res.locals.breadcrumbs.path.push({url:'/reports/rooms', name: 'Rooms'});
+        res.render('reports/room', { pageTitle: room.name});
+    });
+
+}
+
+function getRoomData(){
+    var req = arguments[0];
+    var cb = null;
+    var roomId = null;
+    if (typeof arguments[1] === 'number'){
+        roomId = arguments[1];
+        cb = arguments[2];
+    } else {
+        cb = arguments[1];
+    }
+
     async.parallel({
         rooms: function(cb){
             req.intercode.getRooms(cb);
@@ -96,10 +121,14 @@ function getRoomData(req, cb){
         furnitureHelper.getRunList(result.events, function(err, runs){
             if (err) { return cb(err); }
             result.rooms.forEach(function(room){
+                if (roomId && room.id !== roomId){
+                    return;
+                }
                 room.requests = {};
                 var roomRuns = runs.filter((run) => {
                     return _.findWhere(run.rooms, {id: room.id} )
                 });
+                room.runs = roomRuns;
 
                 roomRuns.forEach(function(run){
                     var category = run.event.category;
@@ -202,6 +231,7 @@ router.use(permission('con_com'));
 router.get('/', listReports);
 router.get('/list', listReport);
 router.get('/rooms', roomsReport);
+router.get('/rooms/:id', roomList);
 router.get('/food', foodReport);
 router.get('/special', specialRequestsReport);
 

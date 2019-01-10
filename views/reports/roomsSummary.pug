@@ -1,0 +1,45 @@
+extends ../layout
+
+block content
+    .row
+        .col-md-2
+            button.btn.btn-outline-primary.btn-sm#exportCSV
+                i.fa.fa-download
+                |  Download CSV
+
+    .table-responsive
+        table.table.table-sm.table-hover.table-sorted(data-order='[[ 0, "asc" ],[ 1, "asc" ]]')
+            thead
+                tr
+                    th Room
+                    th Category
+                    for item in furniture
+                        th=item.name
+                    th Actions
+
+            tbody
+                for room in rooms
+                    for category in categories
+                        if _.has(room.requests, category)
+                            tr.clickable-row(
+                                data-click-object='reports/rooms'
+                                data-click-id=room.id
+                            )
+                                td=room.name
+                                td=category
+                                for item in furniture
+                                    td=room.requests[category][item.id] || 0
+                                td
+                                    a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/reports/rooms/'+room.id)
+                                        i.fa.fa-eye
+                                        |  View
+            tfoot
+                tr
+                    th Room
+                    th Category
+                    for item in furniture
+                        th=item.name
+                    th Actions
+
+append scripts
+    script(src='/javascripts/data-table.js')

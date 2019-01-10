@@ -1,0 +1,64 @@
+extends ../layout
+
+block content
+    .row
+        .col-md-2
+            button.btn.btn-outline-primary.btn-sm#exportCSV
+                i.fa.fa-download
+                |  Download CSV
+
+    .table-responsive
+        table.table.table-sm.table-hover.table-sorted(data-order='[[ 2, "asc" ]]')
+            thead
+                tr
+                    th(style='min-width:120px') Type
+                    th Event
+                    th(style='min-width:100px') Run
+                    for item in furniture
+                        th=item.name
+                    th(style='min-width:100px') Requested
+
+            tbody
+                for run in room.runs
+                    tr(
+                        data-click-object='requests'
+                        data-click-id=run.event.id+'/'+run.id
+                        class= (run.no_furniture || run.requests.length)?'table-success':'table-danger'
+                    )
+                        td
+                            small= humanize(run.event.category)
+                        th= run.event.title
+                        td(data-order=moment(run.starts_at).format(YYYYMMDDHHmmss))
+                            small= moment(run.starts_at).format('ddd, h:mm A')
+                        for item in furniture
+                            td= _.findWhere(run.requests, {furniture_id: item.id})?_.findWhere(run.requests, {furniture_id: item.id}).amount:0
+                        td= (run.no_furniture || run.requests.length)?'Yes':'No'
+                            a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id)
+                                if (run.no_furniture || run.requests.length)
+                                    i.fa.fa-edit
+                                    |  Edit
+                                else
+                                    i.fa.fa-plus
+                                    |  New
+
+            tfoot
+                for category in categories
+                    if _.has(room.requests, category)
+                        tr
+                            th
+                                small= humanize(category)
+                            td Maximum
+                            td
+                            for item in furniture
+                                td= room.requests[category][item.id] || 0
+                            th
+                tr
+                    th Type
+                    th Event
+                    th Run
+                    for item in furniture
+                        th=item.name
+                    th Request Entered
+
+append scripts
+    script(src='/javascripts/data-table.js')
