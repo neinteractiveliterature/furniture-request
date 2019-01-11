@@ -32,6 +32,7 @@ create table runs (
     food text,
     no_furniture boolean default false,
     created_by int not null,
+    updated_by int,
     created timestamp DEFAULT now(),
     primary key (id),
     foreign key (created_by)

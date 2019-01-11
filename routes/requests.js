@@ -135,7 +135,7 @@ function saveRequest(req, res, next){
                 if (run){
                     run.notes = runData.notes;
                     run.food = runData.food;
-                    run.created_by = req.user.id;
+                    run.updated_by = req.user.id;
                     run.no_furniture = no_furniture
                     req.models.runs.update(runId, run, cb);
                 } else if (runData.notes || runData.food || no_furniture){

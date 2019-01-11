@@ -15,6 +15,7 @@ block content
                     th Event
                     th Run
                     th Room(s)
+                    th Contact
                     th(style='min-width:300px') Request
                     th Actions
             tbody
@@ -29,6 +30,8 @@ block content
                         td(data-order=moment(run.starts_at).format(YYYYMMDDHHmmss))= moment(run.starts_at).format('ddd, h:mm A')
                         td
                             small= _.pluck(run.rooms, 'name').join(', ')
+                        td
+                            a(href='mailto:'+run.created_by.email)= run.created_by.name 
 
                         td
                             .card
@@ -51,5 +54,6 @@ block content
                     th Request
                     th Actions
 
+    
 append scripts
     script(src='/javascripts/data-table.js')

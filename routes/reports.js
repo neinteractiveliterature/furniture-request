@@ -193,7 +193,11 @@ function getRequestData(req, type, cb){
                 if (err) { return cb(err); }
                 run.request = runRequest[type];
                 run.no_furniture = runRequest.no_furniture;
-                cb(null, run);
+                req.models.user.get(runRequest.created_by, function(err, user){
+                    if (err) { return cb(err); }
+                    run.created_by = user;
+                    cb(null, run);    
+                });
             });
         }, cb);
     });
