@@ -1,13 +1,13 @@
-var express = require('express');
-var csrf = require('csurf');
-var async = require('async');
-var _ = require('underscore');
-var funitureHelper = require('../lib/furniture-helper');
-var permission = require('../lib/permission');
+const express = require('express');
+const csrf = require('csurf');
+const async = require('async');
+const _ = require('underscore');
+const funitureHelper = require('../lib/furniture-helper');
+const permission = require('../lib/permission');
 
 function list(req, res, next){
     res.locals.breadcrumbs = {
-       path: [
+        path: [
             { url: '/', name: 'Home'},
         ],
         current: 'Furniture'
@@ -27,7 +27,7 @@ function showNew(req, res, next){
         internal: false
     };
     res.locals.breadcrumbs = {
-       path: [
+        path: [
             { url: '/', name: 'Home'},
             { url: '/furniture', name: 'Furniture'},
         ],
@@ -42,7 +42,7 @@ function showNew(req, res, next){
     res.render('furniture/new');
 }
 function showEdit(req, res, next){
-    var id = req.params.id;
+    const id = req.params.id;
     res.locals.csrfToken = req.csrfToken();
 
 
@@ -54,7 +54,7 @@ function showEdit(req, res, next){
             delete req.session.furnitureData;
         }
         res.locals.breadcrumbs = {
-           path: [
+            path: [
                 { url: '/', name: 'Home'},
                 { url: '/furniture', name: 'Furniture'},
             ],
@@ -66,13 +66,13 @@ function showEdit(req, res, next){
 }
 
 function create(req, res, next){
-    var furniture = req.body.furniture;
+    const furniture = req.body.furniture;
 
     req.session.furnitureData = furniture;
 
     req.models.furniture.create(furniture, function(err, newFurnitureId){
         if (err) {
-            req.flash('error', err.toString())
+            req.flash('error', err.toString());
             return res.redirect('/furniture/new');
         }
         delete req.session.furnitureData;
@@ -82,8 +82,8 @@ function create(req, res, next){
 }
 
 function update(req, res, next){
-    var id = req.params.id;
-    var furniture = req.body.furniture;
+    const id = req.params.id;
+    const furniture = req.body.furniture;
     req.session.furnitureData = furniture;
 
     req.models.furniture.get(id, function(err, current){
@@ -93,18 +93,18 @@ function update(req, res, next){
 
         req.models.furniture.update(id, furniture, function(err){
             if (err){
-                req.flash('error', err.toString())
+                req.flash('error', err.toString());
                 return (res.redirect('/furniture/'+id));
             }
             delete req.session.furnitureData;
             req.flash('success', 'Updated Furniture ' + furniture.name);
             res.redirect('/furniture');
         });
-    })
+    });
 }
 
 function remove(req, res, next){
-    var id = req.params.id;
+    const id = req.params.id;
     req.models.furniture.delete(id, function(err){
         if (err) { return next(err); }
         req.flash('success', 'Removed Furniture');
@@ -113,7 +113,7 @@ function remove(req, res, next){
 }
 
 function sort(req, res, next){
-    var order = req.body.order;
+    const order = req.body.order;
     async.eachOf(order, function(id, idx, cb){
         req.models.furniture.get(id, function(err, furniture){
             if (err) { return cb(err); }
@@ -126,7 +126,7 @@ function sort(req, res, next){
     });
 }
 
-var router = express.Router();
+const router = express.Router();
 router.use(funitureHelper.setSection('furniture'));
 router.use(permission('gm_liaison'));
 

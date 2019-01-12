@@ -1,0 +1,54 @@
+extends ../layout
+
+block content
+    .row
+        .col-md-2
+            button.btn.btn-outline-primary.btn-sm#exportCSV
+                i.fa.fa-download
+                |  Download CSV
+
+    .table-responsive
+        table.table.table-sm.table-hover.table-sorted(data-order='[[ 2, "asc" ]]')
+            thead
+                tr
+                    th(style='min-width:120px') Type
+                    th Event
+                    th(style='min-width:115px') Run
+                    th(style='min-width:120px') Room
+                    th Amount
+                    th(style='min-width:132px') Request Entered
+            tbody
+                for request in requests
+                    tr(
+                        data-click-object='requests'
+                        data-click-id=request.event.id+'/'+request.run_id
+                    )
+                        td
+                            small= humanize(request.event.category)
+                        td= request.event.title
+                        td(data-order=moment(request.run.starts_at).format(YYYYMMDDHHmmss))= moment(request.run.starts_at).format('ddd, h:mm A')
+                        td
+                            small= _.findWhere(request.run.rooms, {id: request.room_id}).name
+                        td= request.amount
+                        td
+                            if (checkPermission({permission: 'gm_liaison', eventId: request.event.id}))
+                                a.btn.btn-sm.btn-outline-primary.mx-3(href='/requests/'+request.event.id+'/'+request.run_id + '?backto=list')
+                                    i.fa.fa-edit
+                                    |  Edit
+                            else
+                                a.btn.btn-sm.btn-outline-primary.mx-3(href='/requests/'+request.event.id+'/'+request.run_id + '?backto=list')
+                                    i.fa.fa-eye
+                                    |  View
+            tfoot
+                if (requests.length > 10)
+                    tr
+                        th Type
+                        th Event
+                        th Run
+                        th Room
+                        th Amount
+                        th Request Entered
+
+
+append scripts
+    script(src='/javascripts/data-table.js')

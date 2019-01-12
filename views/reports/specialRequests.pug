@@ -46,13 +46,14 @@ block content
                                     i.fa.fa-eye
                                     |  View
             tfoot
-                tr
-                    th Type
-                    th Event
-                    th Run
-                    th Room(s)
-                    th Request
-                    th Actions
+                if (runs.length > 10)
+                    tr
+                        th Type
+                        th Event
+                        th Run
+                        th Room(s)
+                        th Request
+                        th Actions
 
     
 append scripts

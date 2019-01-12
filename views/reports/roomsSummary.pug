@@ -34,12 +34,13 @@ block content
                                         i.fa.fa-eye
                                         |  View
             tfoot
-                tr
-                    th Room
-                    th Category
-                    for item in furniture
-                        th=item.name
-                    th Actions
+                if (rooms.length > 10)
+                    tr
+                        th Room
+                        th Category
+                        for item in furniture
+                            th=item.name
+                        th Actions
 
 append scripts
     script(src='/javascripts/data-table.js')

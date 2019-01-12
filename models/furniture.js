@@ -70,7 +70,7 @@ function getNextDisplayOrder(cb){
 }
 
 function validate(data){
-     if (! validator.isLength(data.name, 2, 255)){
+    if (! validator.isLength(data.name, 2, 255)){
         return false;
     }
     if (! validator.isNumeric('' + data.max_amount)){

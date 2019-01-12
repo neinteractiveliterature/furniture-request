@@ -54,6 +54,6 @@ exports.delete =  function(id, cb){
 };
 
 function validate(data){
-     return true;
+    return true;
 
 }

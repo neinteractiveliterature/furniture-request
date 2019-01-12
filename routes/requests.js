@@ -1,12 +1,13 @@
-var express = require('express');
-var async = require('async');
-var csrf = require('csurf');
-var _ = require('underscore');
-var moment = require('moment');
-var permission = require('../lib/permission');
-var funitureHelper = require('../lib/furniture-helper');
+'use strict';
+const express = require('express');
+const async = require('async');
+const csrf = require('csurf');
+const _ = require('underscore');
+const moment = require('moment');
+const permission = require('../lib/permission');
+const funitureHelper = require('../lib/furniture-helper');
 
-var paths = {
+const paths = {
     list: {
         path: [
             { url: '/reports', name: 'Reports' },
@@ -14,7 +15,7 @@ var paths = {
         ],
         backto: '/reports/list'
     }
-}
+};
 
 function list(req, res, next){
     res.locals.breadcrumbs = {
@@ -25,11 +26,12 @@ function list(req, res, next){
         if (err) { return next(err); }
         funitureHelper.getRunList(data, function(err, runs){
             if (err) { return next(err); }
-            res.locals.runs = _.sortBy(runs, "starts_at");
+            res.locals.runs = _.sortBy(runs, 'starts_at');
             async.map(res.locals.runs, function(run, cb){
                 req.models.requests.listByRun(run.id, function(err, requests){
                     if (err) { return cb(err); }
-                    run.requests = requests
+                    run.requests = requests;
+
                     cb(null, run);
                 });
             }, function(err){
@@ -41,9 +43,9 @@ function list(req, res, next){
 }
 
 function show(req, res, next){
-    var runId = Number(req.params.runId);
-    var eventId = Number(req.params.eventId);
-    var backto = req.query.backto;
+    const runId = Number(req.params.runId);
+    const eventId = Number(req.params.eventId);
+    const backto = req.query.backto;
 
     async.parallel({
         intercode: function(cb){
@@ -66,21 +68,21 @@ function show(req, res, next){
             res.locals.run.food = result.local.food;
             res.locals.run.no_furniture = result.local.no_furniture;
         }
-        res.locals.furniture = result.furniture || [];;
+        res.locals.furniture = result.furniture || [];
         if (_.has(req.session, 'requestsData')){
             res.locals.requests = req.session.requestsData;
             res.locals.run.notes = req.session.requestsData.run.notes;
             res.locals.run.food = req.session.requestsData.run.food;
             delete req.session.requestsData;
         } else {
-            var requests = {};
+            const requests = {};
             result.intercode.rooms.forEach(function(room){
                 requests['room-'+room.id] = {
                     furniture: {},
                     no_furniture:false,
                 };
                 result.furniture.forEach(function(item){
-                    var request = _.findWhere(result.requests, {
+                    const request = _.findWhere(result.requests, {
                         room_id: room.id,
                         furniture_id:item.id
                     });
@@ -95,7 +97,7 @@ function show(req, res, next){
         }
         res.locals.csrfToken = req.csrfToken();
         res.locals.breadcrumbs = {
-           path: [
+            path: [
                 { url: '/', name: 'Home'},
             ],
             current: res.locals.run.event.title + ' ' + moment(res.locals.run.starts_at).format('ddd, h:mm A')
@@ -114,16 +116,16 @@ function show(req, res, next){
 }
 
 function saveRequest(req, res, next){
-    var runId = Number(req.params.runId);
-    var eventId = Number(req.params.eventId);
-    var requests = req.body.requests;
-    var runData = req.body.run;
+    const runId = Number(req.params.runId);
+    const eventId = Number(req.params.eventId);
+    const requests = req.body.requests;
+    const runData = req.body.run;
 
     req.session.requestsData = requests;
     req.session.requestsData.run = runData;
     async.parallel({
         run: function(cb){
-            no_furniture = true;
+            var no_furniture = true;
             _.keys(requests).forEach(function(room){
                 if (room.match(/^room-/) && !requests[room].no_furniture){
                     no_furniture = false;
@@ -136,7 +138,7 @@ function saveRequest(req, res, next){
                     run.notes = runData.notes;
                     run.food = runData.food;
                     run.updated_by = req.user.id;
-                    run.no_furniture = no_furniture
+                    run.no_furniture = no_furniture;
                     req.models.runs.update(runId, run, cb);
                 } else if (runData.notes || runData.food || no_furniture){
                     req.models.runs.create({
@@ -154,10 +156,10 @@ function saveRequest(req, res, next){
         },
         requests: function(cb){
             async.each(_.keys(requests), function(room, cb){
-                var roomId = Number(room.replace(/^room-/,''));
+                const roomId = Number(room.replace(/^room-/,''));
                 async.each(_.keys(requests[room].furniture), function(item, cb){
-                    var furnitureId = Number(item.replace(/^item-/, ''));
-                    var amount = Number(requests[room].furniture[item]);
+                    const furnitureId = Number(item.replace(/^item-/, ''));
+                    const amount = Number(requests[room].furniture[item]);
                     req.models.requests.find(runId, roomId, furnitureId, function(err, request){
                         if (err) { return cb(err); }
                         if (request){
@@ -171,7 +173,7 @@ function saveRequest(req, res, next){
                                 cb();
                             }
                         } else if (amount && !requests[room].no_furniture){
-                            var request = {
+                            const request = {
                                 run_id: runId,
                                 room_id: roomId,
                                 furniture_id: furnitureId,
@@ -188,7 +190,7 @@ function saveRequest(req, res, next){
         }
     }, function(err){
         if (err) {
-            req.flash('error', err.toString())
+            req.flash('error', err.toString());
             return res.redirect('/requests/'+eventId+'/'+runId);
         }
         delete req.session.requestsData;
@@ -202,16 +204,16 @@ function saveRequest(req, res, next){
 }
 
 function isTeamMemberOrGMLiaison(req, res, next){
-    var eventId = Number(req.params.eventId);
+    const eventId = Number(req.params.eventId);
     permission({permission: 'gm_liaison', eventId:eventId}, '/requests')(req, res, next);
 }
 function isTeamMemberOrConcom(req, res, next){
-    var eventId = Number(req.params.eventId);
+    const eventId = Number(req.params.eventId);
     permission({permission: 'con_com', eventId:eventId}, '/requests')(req, res, next);
 }
 
 
-var router = express.Router();
+const router = express.Router();
 router.use(funitureHelper.setSection('requests'));
 router.use(permission('login'));
 

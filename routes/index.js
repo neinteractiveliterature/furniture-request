@@ -1,8 +1,8 @@
-var express = require('express');
-var passport = require('passport');
-var _ = require('underscore');
+const express = require('express');
+const passport = require('passport');
+const _ = require('underscore');
 
-var permission = require('../lib/permission');
+const permission = require('../lib/permission');
 
 function index(req, res, next){
     res.redirect('/requests');
@@ -14,7 +14,7 @@ function logout(req, res, next){
     res.redirect('/');
 }
 
-var router = express.Router();
+const router = express.Router();
 
 router.get('/',  permission('login'), index);
 router.get('/login', passport.authenticate('oauth2'));
@@ -25,7 +25,7 @@ router.get('/oauth_callback',
     function(req, res) {
         // Successful authentication, redirect home.
         if (_.has(req.session, 'backto')){
-            var backto = req.session.backto;
+            const backto = req.session.backto;
             delete req.session.backto;
             res.redirect(backto);
         } else {

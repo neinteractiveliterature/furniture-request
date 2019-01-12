@@ -8,7 +8,7 @@ $(function () {
         handle: '.handle',
         axis: 'y',
         stop: function (event, ui) {
-            getOrder($(this))
+            getOrder($(this));
         }
 
     });

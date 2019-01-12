@@ -1,0 +1,29 @@
+extends ../layout
+
+block content
+    .table-responsive
+        table.table.table-sm.table-hover.table-sorted(data-order='[[ 3, "desc" ],[ 0, "asc" ]]')
+            thead
+                tr
+                    th Order
+                    th Name
+                    th Description
+                    th Internal
+                    th Requests
+            tbody
+                for item in furniture
+                    tr(
+                        data-click-object='reports/furniture' 
+                        data-click-id=item.id
+                    )
+                        th= item.display_order
+                        th= item.name
+                        td= item.description
+                        td= item.internal?'Yes':'No'
+                        td 
+                            a.btn.btn-sm.btn-outline-primary.mx-3(href='/reports/furniture/'+item.id)
+                                        i.fa.fa-eye
+                                        |  View Usage
+
+append scripts
+    script(src='/javascripts/data-table.js')

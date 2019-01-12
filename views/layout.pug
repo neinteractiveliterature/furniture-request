@@ -13,10 +13,10 @@ html(lang="en")
             link(rel='stylesheet',href='/stylesheets/style.css')
             link(rel='stylesheet' href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i|Montserrat:400,700")
             link(href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css", rel="stylesheet", integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN", crossorigin="anonymous")
-            link(rel='stylesheet' href='https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css')
+            link(rel='stylesheet' href='https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css')
 
     body
-        nav.navbar.navbar-expand-md.navbar-dark.bg-dark.fixed-top.s-menubar.mb-4
+        nav.navbar.navbar-expand-md.navbar-dark.bg-dark.fixed-top.s-dc.mb-4
             .container
 
                 a.navbar-brand(href='/') Furniture Requests
@@ -42,6 +42,7 @@ html(lang="en")
                                 .dropdown-menu(aria-labelledby="reportsDropdown")
                                     a.dropdown-item(href='/reports/list') Runs List
                                     a.dropdown-item(href='/reports/rooms') Rooms Report
+                                    a.dropdown-item(href='/reports/furniture') Furniture Report
                                     a.dropdown-item(href='/reports/food') Food Report
                                     a.dropdown-item(href='/reports/special') Special Requests
 
@@ -118,7 +119,6 @@ html(lang="en")
                 integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
                 crossorigin="anonymous")
             script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.1/js/jquery.tablesorter.min.js")
-            script(src='https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js')
-            script(src='https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js')
+            script(src='https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.js')
 
 

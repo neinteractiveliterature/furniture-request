@@ -44,7 +44,7 @@ block content
             tfoot
                 for category in categories
                     if _.has(room.requests, category)
-                        tr
+                        tr.table-info
                             th
                                 small= humanize(category)
                             td Maximum
@@ -52,13 +52,14 @@ block content
                             for item in furniture
                                 td= room.requests[category][item.id] || 0
                             th
-                tr
-                    th Type
-                    th Event
-                    th Run
-                    for item in furniture
-                        th=item.name
-                    th Request Entered
+                if (room.runs.length + _.keys(room.requests.length) > 10)
+                    tr
+                        th Type
+                        th Event
+                        th Run
+                        for item in furniture
+                            th=item.name
+                        th Request Entered
 
 append scripts
     script(src='/javascripts/data-table.js')

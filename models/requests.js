@@ -24,7 +24,7 @@ exports.find = function(runId, roomId, furnitureId, cb){
         }
         return cb();
     });
-}
+};
 
 exports.listByRun = function(runId, cb){
     var query = 'select * from requests where run_id = $1';
@@ -40,6 +40,14 @@ exports.listByRoom = function(roomId, cb){
         if (err) { return cb(err); }
         return cb(null, result.rows);
     });
+};
+
+exports.listByItem = function(itemId, cb){
+    var query = 'select * from requests where furniture_id = $1';
+    database.query(query, [itemId], function(err, result){
+        if (err) { return cb(err); }
+        return cb(null, result.rows);
+    });  
 };
 
 exports.list = function(cb){
