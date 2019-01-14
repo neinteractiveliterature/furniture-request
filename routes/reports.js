@@ -22,7 +22,7 @@ function listReport(req, res, next){
             if (req.query.export){
                 const data = [['Event', 'Type', 'Run', 'Room(s)', 'Modified', 'Request Entered']];
                 _.sortBy(runs, 'starts_at').forEach(function(run){
-                    if (run.event.category === 'volunteer_event') { return; }
+                    if (run.event.category === 'Volunteer event') { return; }
                     data.push([
                         run.event.title,
                         furnitureHelper.humanize(run.event.category),
@@ -34,7 +34,7 @@ function listReport(req, res, next){
                 });
                 csv.stringify(data, function(err, output){
                     if (err) { return next(err); }
-                    res.attachment('FoodExport.csv');
+                    res.attachment('RunsExport.csv');
                     return res.end(output);
                 });
             } else {
@@ -56,7 +56,7 @@ function roomsReport(req, res, next){
                 header.push(item.name);
             });
             data.push(header);
-            result.rooms.forEach(function(room){
+            _.sortBy(result.rooms, 'name').forEach(function(room){
                 categories.forEach(function(category){
                     if (_.has(room.requests, category)){
                         const row = [room.name, category];
@@ -151,7 +151,7 @@ function foodReport(req, res, next){
         if (req.query.export){
             reportHelper.getRequestCSV(runs, function(err, output){
                 if (err) { return next(err); }
-                res.attachment('RunsExport.csv');
+                res.attachment('FoodExport.csv');
                 return res.end(output);
             });
         } else {
@@ -214,7 +214,7 @@ function furnitureReport(req, res, next){
             requests.forEach(function(request){
                 data.push([
                     request.event.title,
-                    furnitureHelper.humanize(request.event.category),
+                    furnitureHelper.humanize(request.event.event_category.name),
                     moment(request.run.starts_at).format('ddd, h:mm A'),
                     _.findWhere(request.run.rooms, {id: request.room_id}).name,
                     request.amount
