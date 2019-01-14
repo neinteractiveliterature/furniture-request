@@ -38,7 +38,7 @@ function listReport(req, res, next){
                     return res.end(output);
                 });
             } else {
-                res.locals.breadcrumbs = reportHelper.getBreadcrumbs('List');
+                res.locals.breadcrumbs = reportHelper.getBreadcrumbs('Runs List');
                 res.locals.runs = _.sortBy(runs, 'starts_at');
                 res.render('reports/list', { pageTitle: 'All Furniture Requests' });
             }
@@ -48,7 +48,7 @@ function listReport(req, res, next){
 
 function roomsReport(req, res, next){
     reportHelper.getRoomData(req, function(err, result){
-        const categories = _.uniq(_.pluck(result.events, 'category'));
+        const categories = _.uniq(_.pluck(_.pluck(result.events, 'event_category'), 'name'));
         if (req.query.export){
             const data = [];
             const header = ['Room', 'Category'];
@@ -87,7 +87,7 @@ function roomList(req, res, next){
     reportHelper.getRoomData(req, roomId, function(err, result){
         if (err) { return next(err); }
         const room = _.findWhere(result.rooms, {id: roomId});
-        const categories = _.uniq(_.pluck(result.events, 'category'));
+        const categories = _.uniq(_.pluck(_.pluck(result.events, 'event_category'), 'name'));
         if (req.query.export){
             const data = [];
             const header = ['Event', 'Type', 'Run'];

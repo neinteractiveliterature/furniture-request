@@ -24,7 +24,7 @@ block content
                         data-click-id=request.event.id+'/'+request.run_id
                     )
                         td
-                            small= humanize(request.event.category)
+                            small= humanize(request.event.event_category.name)
                         td= request.event.title
                         td(data-order=moment(request.run.starts_at).format(YYYYMMDDHHmmss))= moment(request.run.starts_at).format('ddd, h:mm A')
                         td
