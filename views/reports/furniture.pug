@@ -31,7 +31,7 @@ block content
                             small= _.findWhere(request.run.rooms, {id: request.room_id}).name
                         td= request.amount
                         td
-                            if (checkPermission({permission: 'gm_liaison', eventId: request.event.id}))
+                            if (checkPermission({permission: 'GM Coordinator', eventId: request.event.id}))
                                 a.btn.btn-sm.btn-outline-primary.mx-3(href='/requests/'+request.event.id+'/'+request.run_id + '?backto=list')
                                     i.fa.fa-edit
                                     |  Edit

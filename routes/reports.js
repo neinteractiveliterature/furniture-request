@@ -99,7 +99,7 @@ function roomList(req, res, next){
 
             _.sortBy(room.runs, 'starts_at').forEach(function(run){
                 const row = [
-                    run.event.title, 
+                    run.event.title,
                     furnitureHelper.humanize(run.event.category),
                     moment(run.starts_at).format('ddd, h:mm A')
                 ];
@@ -192,7 +192,7 @@ function furnitureReport(req, res, next){
     const itemId = req.params.id;
     async.parallel({
         requests: function(cb){
-            req.models.requests.listByItem(itemId, cb);        
+            req.models.requests.listByItem(itemId, cb);
         },
         events: function(cb){
             req.intercode.getEvents(cb);
@@ -247,7 +247,7 @@ function findRun(events, runId){
 
 const router = express.Router();
 router.use(furnitureHelper.setSection('reports'));
-router.use(permission('con_com'));
+router.use(permission('Con Com'));
 
 router.get('/', listReports);
 router.get('/list', listReport);

@@ -209,7 +209,7 @@ function isTeamMemberOrGMLiaison(req, res, next){
 }
 function isTeamMemberOrConcom(req, res, next){
     const eventId = Number(req.params.eventId);
-    permission({permission: 'con_com', eventId:eventId}, '/requests')(req, res, next);
+    permission({permission: 'Con Com', eventId:eventId}, '/requests')(req, res, next);
 }
 
 

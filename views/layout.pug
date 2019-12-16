@@ -28,10 +28,10 @@ html(lang="en")
                         li.nav-item(class= siteSection==='requests'?"active":null)
                             a.nav-link(href="/") Home
                                 span.sr-only (current)
-                        - if (checkPermission('gm_liaison'))
+                        - if (checkPermission('GM Coordinator'))
                             li.nav-item(class= siteSection==='furniture'?"active":null)
                                 a.nav-link(href='/furniture') Furniture
-                        - if (checkPermission('con_com'))
+                        - if (checkPermission('Con Com'))
                             li.nav-item.dropdown(class= siteSection==='reports'?"active":null)
                                 a.nav-link.dropdown-toggle#reportsDropdown(
                                     href='#'
