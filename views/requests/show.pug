@@ -6,9 +6,9 @@ block content
             p.my-1.
                 Descriptions for items can be viewed by mousing over the item name
             p.my-1.
-                More information about some of the things on this form is available at the <a class='alert-link' href='#{config.app.interconBaseURL}/pages/gmpolicies#FoodService' target='_blank'> GM Benefits and Policies</a> document.
+                More information about some of the things on this form is available at the <a class='alert-link' href='#{config.app.interconBaseURL}/pages/gmpolicies' target='_blank'> GM Benefits and Policies</a> document.
             p.my-1.
-               A map of the hotel function space is available at the  <a class='alert-link' href='#{config.app.interconBaseURL}/pages/hotellayout' target='_blank'>Hotel Layout</a> page
+               A map of the hotel function space is available at the  <a class='alert-link' href='#{config.app.interconBaseURL}/pages/hotel/layout' target='_blank'>Hotel Layout</a> page
 
             button.close(type="button" data-dismiss="alert" aria-label="Close")
                 span(aria-hidden="true") &times;
@@ -74,7 +74,7 @@ block content
                                     The hotel can provide food or food and bartending service at GM cost. <strong> INTERCON CANNOT PAY FOR THESE SERVICES.</strong> Do you need either of them?
 
                                 p.form-text.muted.
-                                    Please note that these are the ONLY way you can serve food or alcohol at your game. The con suite CANNOT cater your game or event, and NO alcohol is allowed in con space without a hotel bartender present. More information about pricing is available at <a href='#{config.app.interconBaseURL}/pages/gmpolicies#FoodService' target='_blank'> GM Benefits and Policies</a> or contact the <a href='mailto:hotel@interconlarp.org'>Hotel Liaison</a>
+                                    Please note that these are the ONLY way you can serve food or alcohol at your game. As per the contract with the hotel, GMs cannot bring food or drink into your game or event, and NO alcohol is allowed in con space without a hotel bartender present. More information about pricing is available at <a href='#{config.app.interconBaseURL}/pages/gmpolicies#FoodService' target='_blank'> GM Benefits and Policies</a>, the menus are available at <a href='#{config.app.interconBaseURL}/pages/hotel/menu' target='_blank'>Hotel Menu</a>, or contact the <a href='mailto:hotel@interconlarp.org'>Hotel Liaison</a>
                                 if checkPermission({permission: 'gm_liaison', eventId: run.event.id})
                                     textarea.form-control(name="run[food]" id="run_food" rows=3)
                                        = run.food
