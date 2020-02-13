@@ -202,7 +202,9 @@ function furnitureReport(req, res, next){
         }
     }, function(err, result){
         if (err) { return next(err); }
-        const requests = result.requests.map(function(request){
+        const requests = result.requests.filter(request => {
+            return findRun(result.events, request.run_id);
+        }).map(request => {
             const event = findRun(result.events, request.run_id);
             const run = _.findWhere(event.runs, {id: request.run_id});
             request.event = event;
