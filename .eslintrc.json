@@ -7,12 +7,16 @@
     },
     "extends": [
         "eslint:recommended",
+        "plugin:node/recommended",
         "plugin:@graphql-eslint/recommended"
     ],
     "parser": "espree",
     "parserOptions": {
         "ecmaVersion": 6
     },
+    "plugins": [
+        "promise"
+    ],
     "rules": {
         "no-unused-vars": "off",
         "no-console": "off",
