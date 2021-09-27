@@ -12,6 +12,7 @@ var moment = require('moment');
 var methodOverride = require('method-override');
 var redis = require('redis');
 var passport = require('passport');
+var { URL } = require('url');
 var OAuth2Strategy = require('passport-oauth2').Strategy;
 
 var models = require('./lib/models');
@@ -60,7 +61,7 @@ if (config.get('app.sessionType') === 'redis'){
     var RedisStore = require('connect-redis')(session);
     var redisClient = null;
     if (config.get('app.redisURL')){
-        var redisToGo   = require('url').parse(config.get('app.redisURL'));
+        var redisToGo   = new URL(config.get('app.redisURL'));
         redisClient = redis.createClient(redisToGo.port, redisToGo.hostname);
 
         redisClient.auth(redisToGo.auth.split(':')[1]);

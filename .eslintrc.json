@@ -5,10 +5,18 @@
         "es6": true,
         "jquery": true
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:node/recommended",
+        "plugin:@graphql-eslint/recommended"
+    ],
+    "parser": "espree",
     "parserOptions": {
         "ecmaVersion": 6
     },
+    "plugins": [
+        "promise"
+    ],
     "rules": {
         "no-unused-vars": "off",
         "no-console": "off",
@@ -33,5 +41,25 @@
             "error",
             "always"
         ]
-    }
+    },
+    "overrides": [
+        {
+            "files": [
+                "*.tsx",
+                "*.ts",
+                "*.jsx",
+                "*.js"
+            ],
+            "processor": "@graphql-eslint/graphql"
+        },
+        {
+            "files": [
+                "*.graphql"
+            ],
+            "parser": "@graphql-eslint/eslint-plugin",
+            "plugins": [
+                "@graphql-eslint"
+            ]
+        }
+    ]
 }
