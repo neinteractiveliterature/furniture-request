@@ -1,7 +1,6 @@
 'use strict';
 const express = require('express');
 const async = require('async');
-const csrf = require('csurf');
 const _ = require('underscore');
 const csv = require('csv');
 const moment = require('moment');
@@ -9,13 +8,13 @@ const permission = require('../lib/permission');
 const furnitureHelper = require('../lib/furniture-helper');
 const reportHelper = require('../lib/report-helper');
 
-function listReports(req, res, next){
+function listReports(req, res){
     res.render('reports/index', {pageTitle: 'Furniture Reports'});
 }
 
-function listReport(req, res, next){
-    req.intercode.getEvents(function(err, events){
-        if (err) { return next(err); }
+async function listReport(req, res, next){
+    try {
+        const events = await req.intercode.getEvents();
         furnitureHelper.getRunList(events, function(err, runs){
             if (err) { return next(err); }
             res.locals.runs = _.sortBy(runs, 'starts_at');
@@ -43,11 +42,14 @@ function listReport(req, res, next){
                 res.render('reports/list', { pageTitle: 'All Furniture Requests' });
             }
         });
-    });
+    } catch (err) {
+        next(err);
+    }
 }
 
 function roomsReport(req, res, next){
     reportHelper.getRoomData(req, function(err, result){
+        if (err) { return next(err); }
         const categories = _.uniq(_.pluck(_.pluck(result.events, 'event_category'), 'name'));
         if (req.query.export){
             const data = [];
@@ -195,7 +197,9 @@ function furnitureReport(req, res, next){
             req.models.requests.listByItem(itemId, cb);
         },
         events: function(cb){
-            req.intercode.getEvents(cb);
+            req.intercode.getEvents()
+                .then((events) => cb(null, events))
+                .catch((err) => cb(err));
         },
         furniture: function(cb){
             req.models.furniture.get(itemId, cb);
@@ -238,8 +242,8 @@ function furnitureReport(req, res, next){
 }
 
 function findRun(events, runId){
-    for (var i = 0; i < events.length; i++){
-        for (var j = 0; j < events[i].runs.length; j++){
+    for (let i = 0; i < events.length; i++){
+        for (let j = 0; j < events[i].runs.length; j++){
             if (events[i].runs[j].id === runId){
                 return events[i];
             }

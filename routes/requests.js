@@ -17,13 +17,13 @@ const paths = {
     }
 };
 
-function list(req, res, next){
+async function list(req, res, next){
     res.locals.breadcrumbs = {
         path: [],
         current: 'Home'
     };
-    req.intercode.getMemberEvents( req.user.intercode_id, function(err, data){
-        if (err) { return next(err); }
+    try {
+        const data = await req.intercode.getMemberEvents( req.user.intercode_id);
         funitureHelper.getRunList(data, function(err, runs){
             if (err) { return next(err); }
             res.locals.runs = _.sortBy(runs, 'starts_at');
@@ -39,7 +39,9 @@ function list(req, res, next){
                 res.render('requests/index', {pageTitle: 'Requests for ' + req.user.name});
             });
         });
-    });
+    } catch (err) {
+        return next(err);
+    }
 }
 
 function show(req, res, next){
@@ -49,7 +51,9 @@ function show(req, res, next){
 
     async.parallel({
         intercode: function(cb){
-            req.intercode.getRun(eventId, runId, cb);
+            req.intercode.getRun(eventId, runId)
+                .then((run) => cb(null, run))
+                .catch((err) => cb(err));
         },
         local: function(cb){
             req.models.runs.get(runId, cb);
@@ -115,7 +119,7 @@ function show(req, res, next){
     });
 }
 
-function saveRequest(req, res, next){
+function saveRequest(req, res){
     const runId = Number(req.params.runId);
     const eventId = Number(req.params.eventId);
     const requests = req.body.requests;
@@ -125,7 +129,7 @@ function saveRequest(req, res, next){
     req.session.requestsData.run = runData;
     async.parallel({
         run: function(cb){
-            var no_furniture = true;
+            let no_furniture = true;
             _.keys(requests).forEach(function(room){
                 if (room.match(/^room-/) && !requests[room].no_furniture){
                     no_furniture = false;

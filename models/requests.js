@@ -1,11 +1,11 @@
 'use strict';
-var async = require('async');
-var _ = require('underscore');
-var database = require('../lib/database');
-var validator = require('validator');
+const async = require('async');
+const _ = require('underscore');
+const database = require('../lib/database');
+const validator = require('validator');
 
 exports.get = function(id, cb){
-    var query = 'select * from requests where id = $1';
+    const query = 'select * from requests where id = $1';
     database.query(query, [id], function(err, result){
         if (err) { return cb(err); }
         if (result.rows.length){
@@ -16,7 +16,7 @@ exports.get = function(id, cb){
 };
 
 exports.find = function(runId, roomId, furnitureId, cb){
-    var query = 'select * from requests where run_id = $1 and room_id = $2 and furniture_id = $3';
+    const query = 'select * from requests where run_id = $1 and room_id = $2 and furniture_id = $3';
     database.query(query, [runId, roomId, furnitureId], function(err, result){
         if (err) { return cb(err); }
         if (result.rows.length){
@@ -27,7 +27,7 @@ exports.find = function(runId, roomId, furnitureId, cb){
 };
 
 exports.listByRun = function(runId, cb){
-    var query = 'select * from requests where run_id = $1';
+    const query = 'select * from requests where run_id = $1';
     database.query(query, [runId], function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows);
@@ -35,7 +35,7 @@ exports.listByRun = function(runId, cb){
 };
 
 exports.listByRoom = function(roomId, cb){
-    var query = 'select * from requests where room_id = $1';
+    const query = 'select * from requests where room_id = $1';
     database.query(query, [roomId], function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows);
@@ -43,7 +43,7 @@ exports.listByRoom = function(roomId, cb){
 };
 
 exports.listByItem = function(itemId, cb){
-    var query = 'select * from requests where furniture_id = $1';
+    const query = 'select * from requests where furniture_id = $1';
     database.query(query, [itemId], function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows);
@@ -51,7 +51,7 @@ exports.listByItem = function(itemId, cb){
 };
 
 exports.list = function(cb){
-    var query = 'select * from requests order by id';
+    const query = 'select * from requests order by id';
     database.query(query, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows);
@@ -64,8 +64,8 @@ exports.create = function(data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'insert into requests (run_id, room_id, furniture_id, amount, created_by) values ($1, $2, $3, $4, $5) returning id';
-    var dataArr = [data.run_id, data.room_id, data.furniture_id, data.amount, data.created_by];
+    const query = 'insert into requests (run_id, room_id, furniture_id, amount, created_by) values ($1, $2, $3, $4, $5) returning id';
+    const dataArr = [data.run_id, data.room_id, data.furniture_id, data.amount, data.created_by];
     database.query(query, dataArr, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows[0].id);
@@ -78,13 +78,13 @@ exports.update =  function(id, data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'update requests set run_id = $2, room_id = $3, furniture_id = $4, amount = $5, created_by = $6 where id = $1';
-    var dataArr = [id, data.run_id, data.room_id, data.furniture_id, data.amount, data.created_by];
+    const query = 'update requests set run_id = $2, room_id = $3, furniture_id = $4, amount = $5, created_by = $6 where id = $1';
+    const dataArr = [id, data.run_id, data.room_id, data.furniture_id, data.amount, data.created_by];
     database.query(query, dataArr, cb);
 };
 
 exports.delete =  function(id, cb){
-    var query = 'delete from requests where id = $1';
+    const query = 'delete from requests where id = $1';
     database.query(query, [id], cb);
 };
 

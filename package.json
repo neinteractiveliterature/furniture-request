@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
+    "start:watch": "nodemon ./bin/www",
     "lint": "eslint . --cache --ext .js"
   },
   "dependencies": {
@@ -18,7 +19,7 @@
     "express": "~4.16.0",
     "express-flash": "0.0.2",
     "express-session": "^1.17.0",
-    "graphql-request": "^1.8.2",
+    "graphql-request": "^3.5.0",
     "http-errors": "~1.6.2",
     "method-override": "^3.0.0",
     "moment": "^2.24.0",
@@ -43,6 +44,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "espree": "^9.0.0",
-    "graphql": "^15.6.0"
+    "graphql": "^15.6.0",
+    "nodemon": "^2.0.13"
   }
 }

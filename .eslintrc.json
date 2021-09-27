@@ -12,13 +12,14 @@
     ],
     "parser": "espree",
     "parserOptions": {
-        "ecmaVersion": 6
+        "ecmaVersion": 8
     },
     "plugins": [
         "promise"
     ],
     "rules": {
-        "no-unused-vars": "off",
+        "no-var": "error",
+        "prefer-const": "error",
         "no-console": "off",
         "no-empty-pattern": 2,
         "no-empty": "off",
