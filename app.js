@@ -99,7 +99,7 @@ passport.deserializeUser(function(id, cb) {
 var passportClient = new OAuth2Strategy(config.get('auth'),
     function(req, accessToken, refreshToken, profile, cb) {
         models.user.findOrCreate({
-            name: profile.name_without_nickname,
+            name: profile.name,
             intercode_id: profile.id,
             email: profile.email
         }, function(err, user){
@@ -112,9 +112,9 @@ var passportClient = new OAuth2Strategy(config.get('auth'),
 
 passportClient.userProfile = function (token, cb) {
     var intercode = new Intercode(token);
-    intercode.getProfile(function(err, data){
+    intercode.getUser(function(err, data){
         if (err) { return cb(err); }
-        cb(null, data.myProfile);
+        cb(null, data.currentUser);
     });
 };
 
