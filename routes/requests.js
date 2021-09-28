@@ -1,6 +1,5 @@
 'use strict';
-const express = require('express');
-const async = require('async');
+const PromiseRouter = require('express-promise-router');
 const csrf = require('csurf');
 const _ = require('underscore');
 const moment = require('moment');
@@ -17,109 +16,142 @@ const paths = {
     }
 };
 
-async function list(req, res, next){
+async function list(req, res){
     res.locals.breadcrumbs = {
         path: [],
         current: 'Home'
     };
-    try {
-        const data = await req.intercode.getMemberEvents( req.user.intercode_id);
-        funitureHelper.getRunList(data, function(err, runs){
-            if (err) { return next(err); }
-            res.locals.runs = _.sortBy(runs, 'starts_at');
-            async.map(res.locals.runs, function(run, cb){
-                req.models.requests.listByRun(run.id, function(err, requests){
-                    if (err) { return cb(err); }
-                    run.requests = requests;
-
-                    cb(null, run);
-                });
-            }, function(err){
-                if (err) { return next(err); }
-                res.render('requests/index', {pageTitle: 'Requests for ' + req.user.name});
-            });
-        });
-    } catch (err) {
-        return next(err);
-    }
+    const data = await req.intercode.getMemberEvents( req.user.intercode_id);
+    const runs = await funitureHelper.getRunList(data);
+    res.locals.runs = _.sortBy(runs, 'starts_at');
+    res.render('requests/index', {pageTitle: `Requests for ${req.user.name}`});
 }
 
-function show(req, res, next){
+async function show(req, res){
     const runId = Number(req.params.runId);
     const eventId = Number(req.params.eventId);
     const backto = req.query.backto;
 
-    async.parallel({
-        intercode: function(cb){
-            req.intercode.getRun(eventId, runId)
-                .then((run) => cb(null, run))
-                .catch((err) => cb(err));
-        },
-        local: function(cb){
-            req.models.runs.get(runId, cb);
-        },
-        furniture: function(cb){
-            req.models.furniture.list(cb);
-        },
-        requests: function(cb){
-            req.models.requests.listByRun(runId, cb);
-        }
-    }, function(err, result){
-        if (err) { return next(err); }
-        res.locals.run = result.intercode;
-        if (result.local){
-            res.locals.run.notes = result.local.notes;
-            res.locals.run.food = result.local.food;
-            res.locals.run.no_furniture = result.local.no_furniture;
-        }
-        res.locals.furniture = result.furniture || [];
-        if (_.has(req.session, 'requestsData')){
-            res.locals.requests = req.session.requestsData;
-            res.locals.run.notes = req.session.requestsData.run.notes;
-            res.locals.run.food = req.session.requestsData.run.food;
-            delete req.session.requestsData;
-        } else {
-            const requests = {};
-            result.intercode.rooms.forEach(function(room){
-                requests['room-'+room.id] = {
-                    furniture: {},
-                    no_furniture:false,
-                };
-                result.furniture.forEach(function(item){
-                    const request = _.findWhere(result.requests, {
-                        room_id: room.id,
-                        furniture_id:item.id
-                    });
-                    if (request){
-                        requests['room-'+room.id].furniture['item-'+item.id] = request.amount;
-                    } else {
-                        requests['room-'+room.id].furniture['item-'+item.id] = null;
-                    }
+    const [intercode, local, furniture] = await Promise.all([
+        req.intercode.getRun(eventId, runId),
+        req.models.runs.get(runId),
+        req.models.furniture.list(),
+    ]);
+    res.locals.run = intercode;
+    if (local){
+        res.locals.run.notes = local.notes;
+        res.locals.run.food = local.food;
+        res.locals.run.no_furniture = local.no_furniture;
+    }
+    res.locals.furniture = furniture || [];
+    if (_.has(req.session, 'requestsData')){
+        res.locals.requests = req.session.requestsData;
+        res.locals.run.notes = req.session.requestsData.run.notes;
+        res.locals.run.food = req.session.requestsData.run.food;
+        delete req.session.requestsData;
+    } else {
+        const requests = {};
+        intercode.rooms.forEach(function(room){
+            requests['room-'+room.id] = {
+                furniture: {},
+                no_furniture:false,
+            };
+            furniture.forEach(function(item){
+                const request = _.findWhere(requests, {
+                    room_id: room.id,
+                    furniture_id:item.id
                 });
+                if (request){
+                    requests['room-'+room.id].furniture['item-'+item.id] = request.amount;
+                } else {
+                    requests['room-'+room.id].furniture['item-'+item.id] = null;
+                }
             });
-            res.locals.requests = requests;
-        }
-        res.locals.csrfToken = req.csrfToken();
-        res.locals.breadcrumbs = {
-            path: [
-                { url: '/', name: 'Home'},
-            ],
-            current: res.locals.run.event.title + ' ' + moment(res.locals.run.starts_at).format('ddd, h:mm A')
-        };
-        if (backto && _.has(paths, backto)){
-            res.locals.backto = paths[backto].backto;
-            res.locals.breadcrumbs.path = res.locals.breadcrumbs.path.concat(paths[backto].path);
-        }
+        });
+        res.locals.requests = requests;
+    }
+    res.locals.csrfToken = req.csrfToken();
+    res.locals.breadcrumbs = {
+        path: [
+            { url: '/', name: 'Home'},
+        ],
+        current: res.locals.run.event.title + ' ' + moment(res.locals.run.starts_at).format('ddd, h:mm A')
+    };
+    if (backto && _.has(paths, backto)){
+        res.locals.backto = paths[backto].backto;
+        res.locals.breadcrumbs.path = res.locals.breadcrumbs.path.concat(paths[backto].path);
+    }
 
-        res.render('requests/show', {pageTitle: {
-            h2: res.locals.run.event.title,
-            h3: moment(res.locals.run.starts_at).format('ddd, h:mm A'),
-            h4: funitureHelper.teamMembers(res.locals.run.event)
-        }});
-    });
+    res.render('requests/show', {pageTitle: {
+        h2: res.locals.run.event.title,
+        h3: moment(res.locals.run.starts_at).format('ddd, h:mm A'),
+        h4: funitureHelper.teamMembers(res.locals.run.event)
+    }});
 }
 
-function saveRequest(req, res){
+async function saveRunRequest(req, requests, runId, eventId, runData) {
+    let no_furniture = true;
+    _.keys(requests).forEach(function(room){
+        if (room.match(/^room-/) && !requests[room].no_furniture){
+            no_furniture = false;
+        }
+    });
+    const run = await req.models.runs.get(runId);
+    if (run) {
+        run.notes = runData.notes;
+        run.food = runData.food;
+        run.updated_by = req.user.id;
+        run.no_furniture = no_furniture;
+        req.models.runs.update(runId, run);
+    } else if (runData.notes || runData.food || no_furniture){
+        req.models.runs.create({
+            id: runId,
+            event_id: eventId,
+            notes: runData.notes,
+            food: runData.food,
+            no_furniture: no_furniture,
+            created_by: req.user.id
+        });
+    }
+}
+
+async function saveRoomFurnitureRequest(req, runId, roomId, furnitureId, amount, noFurniture) {
+    const request = await req.models.requests.find(runId, roomId, furnitureId);
+    if (request){
+        if(!amount || noFurniture){
+            await req.models.requests.delete(request.id);
+        } else if (amount || amount !== request.amount){
+            request.amount = amount;
+            request.created_by = req.user.id;
+            await req.models.requests.update(request.id, request);
+        }
+    } else if (amount && !noFurniture){
+        const request = {
+            run_id: runId,
+            room_id: roomId,
+            furniture_id: furnitureId,
+            amount: amount,
+            created_by: req.user.id
+        };
+        await req.models.requests.create(request);
+    }
+}
+
+async function saveRoomRequest(req, runId, roomId, roomRequest) {
+    await Promise.all(_.keys(roomRequest.furniture).map(async (furnitureKey) => {
+        const furnitureId = Number(furnitureKey.replace(/^item-/, ''));
+        await saveRoomFurnitureRequest(
+            req,
+            runId,
+            roomId,
+            furnitureId,
+            Number(roomRequest.furniture[furnitureKey]),
+            roomRequest.no_furniture,
+        );
+    }));
+}
+
+async function saveRequest(req, res){
     const runId = Number(req.params.runId);
     const eventId = Number(req.params.eventId);
     const requests = req.body.requests;
@@ -127,84 +159,26 @@ function saveRequest(req, res){
 
     req.session.requestsData = requests;
     req.session.requestsData.run = runData;
-    async.parallel({
-        run: function(cb){
-            let no_furniture = true;
-            _.keys(requests).forEach(function(room){
-                if (room.match(/^room-/) && !requests[room].no_furniture){
-                    no_furniture = false;
-                }
-            });
+    try {
+        await Promise.all([
+            async () => saveRunRequest(req, requests, runId, eventId, runData),
+            ..._.keys(requests).map(async (roomKey) => {
+                const roomId = Number(roomKey.replace(/^room-/,''));
+                await saveRoomRequest(req, runId, roomId, requests[roomKey]);
+            }),
+        ]);
+    } catch (err) {
+        req.flash('error', err.toString());
+        return res.redirect('/requests/'+eventId+'/'+runId);
+    }
 
-            req.models.runs.get(runId, function(err, run){
-                if (err) { return cb(err); }
-                if (run){
-                    run.notes = runData.notes;
-                    run.food = runData.food;
-                    run.updated_by = req.user.id;
-                    run.no_furniture = no_furniture;
-                    req.models.runs.update(runId, run, cb);
-                } else if (runData.notes || runData.food || no_furniture){
-                    req.models.runs.create({
-                        id: runId,
-                        event_id: eventId,
-                        notes: runData.notes,
-                        food: runData.food,
-                        no_furniture: no_furniture,
-                        created_by: req.user.id
-                    }, cb);
-                } else {
-                    cb();
-                }
-            });
-        },
-        requests: function(cb){
-            async.each(_.keys(requests), function(room, cb){
-                const roomId = Number(room.replace(/^room-/,''));
-                async.each(_.keys(requests[room].furniture), function(item, cb){
-                    const furnitureId = Number(item.replace(/^item-/, ''));
-                    const amount = Number(requests[room].furniture[item]);
-                    req.models.requests.find(runId, roomId, furnitureId, function(err, request){
-                        if (err) { return cb(err); }
-                        if (request){
-                            if(!amount || requests[room].no_furniture){
-                                return req.models.requests.delete(request.id, cb);
-                            } else if (amount || amount !== request.amount){
-                                request.amount = amount;
-                                request.created_by = req.user.id;
-                                return req.models.requests.update(request.id, request, cb);
-                            } else {
-                                cb();
-                            }
-                        } else if (amount && !requests[room].no_furniture){
-                            const request = {
-                                run_id: runId,
-                                room_id: roomId,
-                                furniture_id: furnitureId,
-                                amount: amount,
-                                created_by: req.user.id
-                            };
-                            return req.models.requests.create(request, cb);
-                        } else {
-                            cb();
-                        }
-                    });
-                }, cb);
-            }, cb);
-        }
-    }, function(err){
-        if (err) {
-            req.flash('error', err.toString());
-            return res.redirect('/requests/'+eventId+'/'+runId);
-        }
-        delete req.session.requestsData;
-        req.flash('success', 'Saved Request');
-        if (req.body._backto){
-            res.redirect(req.body._backto);
-        } else {
-            res.redirect('/requests');
-        }
-    });
+    delete req.session.requestsData;
+    req.flash('success', 'Saved Request');
+    if (req.body._backto){
+        res.redirect(req.body._backto);
+    } else {
+        res.redirect('/requests');
+    }
 }
 
 function isTeamMemberOrGMLiaison(req, res, next){
@@ -217,7 +191,7 @@ function isTeamMemberOrConcom(req, res, next){
 }
 
 
-const router = express.Router();
+const router = PromiseRouter();
 router.use(funitureHelper.setSection('requests'));
 router.use(permission('login'));
 

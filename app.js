@@ -90,23 +90,28 @@ passport.serializeUser(function(user, cb) {
     cb(null, user.id);
 });
 
-passport.deserializeUser(function(id, cb) {
-    models.user.get(id, function(err, user) {
-        cb(err, user);
-    });
+passport.deserializeUser(async function(id, cb) {
+    try {
+        const user = await models.user.get(id);
+        cb(null, user);
+    } catch (err) {
+        cb(err);
+    }
 });
 
 const passportClient = new OAuth2Strategy(config.get('auth'),
-    function(req, accessToken, refreshToken, profile, cb) {
-        models.user.findOrCreate({
-            name: profile.name,
-            intercode_id: profile.id,
-            email: profile.email
-        }, function(err, user){
-            if (err) { return cb(err); }
+    async function(req, accessToken, refreshToken, profile, cb) {
+        try {
+            const user = await models.user.findOrCreate({
+                name: profile.name,
+                intercode_id: profile.id,
+                email: profile.email
+            });
             req.session.accessToken = accessToken;
-            return cb(null, user);
-        });
+            cb(null, user);
+        } catch (err) {
+            cb(err);
+        }
     }
 );
 
@@ -160,7 +165,10 @@ app.use(function(req, res, next){
     next();
 });
 
-app.use(permission());
+// TODO: Dave, can we get rid of this?  There's another instance of it on line 84 and having two
+// of them results in duplicate GraphQL queries.  Not sure if there's a reason we want to do it
+// in two places in the stack.
+// app.use(permission());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

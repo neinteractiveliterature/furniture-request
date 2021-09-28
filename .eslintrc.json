@@ -12,7 +12,7 @@
     ],
     "parser": "espree",
     "parserOptions": {
-        "ecmaVersion": 8
+        "ecmaVersion": 2020
     },
     "plugins": [
         "promise"
