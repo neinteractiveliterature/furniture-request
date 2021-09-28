@@ -32,16 +32,18 @@ async function show(req, res){
     const eventId = Number(req.params.eventId);
     const backto = req.query.backto;
 
-    const [intercode, local, furniture] = await Promise.all([
+    const [intercodeRun, localRun, furniture, requests] = await Promise.all([
         req.intercode.getRun(eventId, runId),
         req.models.runs.get(runId),
         req.models.furniture.list(),
+        req.models.requests.listByRun(runId),
     ]);
-    res.locals.run = intercode;
-    if (local){
-        res.locals.run.notes = local.notes;
-        res.locals.run.food = local.food;
-        res.locals.run.no_furniture = local.no_furniture;
+    res.locals.run = intercodeRun;
+    res.locals.requests = requests;
+    if (localRun){
+        res.locals.run.notes = localRun.notes;
+        res.locals.run.food = localRun.food;
+        res.locals.run.no_furniture = localRun.no_furniture;
     }
     res.locals.furniture = furniture || [];
     if (_.has(req.session, 'requestsData')){
@@ -50,9 +52,9 @@ async function show(req, res){
         res.locals.run.food = req.session.requestsData.run.food;
         delete req.session.requestsData;
     } else {
-        const requests = {};
-        intercode.rooms.forEach(function(room){
-            requests['room-'+room.id] = {
+        const requestsForView = {};
+        intercodeRun.rooms.forEach(function(room){
+            requestsForView['room-'+room.id] = {
                 furniture: {},
                 no_furniture:false,
             };
@@ -62,13 +64,13 @@ async function show(req, res){
                     furniture_id:item.id
                 });
                 if (request){
-                    requests['room-'+room.id].furniture['item-'+item.id] = request.amount;
+                    requestsForView['room-'+room.id].furniture['item-'+item.id] = request.amount;
                 } else {
-                    requests['room-'+room.id].furniture['item-'+item.id] = null;
+                    requestsForView['room-'+room.id].furniture['item-'+item.id] = null;
                 }
             });
         });
-        res.locals.requests = requests;
+        res.locals.requests = requestsForView;
     }
     res.locals.csrfToken = req.csrfToken();
     res.locals.breadcrumbs = {
