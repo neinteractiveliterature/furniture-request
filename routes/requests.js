@@ -104,9 +104,9 @@ async function saveRunRequest(req, requests, runId, eventId, runData) {
         run.food = runData.food;
         run.updated_by = req.user.id;
         run.no_furniture = no_furniture;
-        req.models.runs.update(runId, run);
+        await req.models.runs.update(runId, run);
     } else if (runData.notes || runData.food || no_furniture){
-        req.models.runs.create({
+        await req.models.runs.create({
             id: runId,
             event_id: eventId,
             notes: runData.notes,
