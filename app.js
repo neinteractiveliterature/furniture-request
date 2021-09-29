@@ -133,23 +133,9 @@ passport.use(passportClient);
 app.use(async function(req, res, next){
     if (req.session.accessToken && req.user && !req.originalUrl.match(/^\/log(in|out)/) ){
         req.intercode = new Intercode(req.session.accessToken);
-        try {
-            const events = await req.intercode.getMemberEvents(req.user.intercode_id);
-            req.user.events = events;
-            next();
-        } catch (err) {
-            if(err.response && err.response.error === 'invalid_token'){
-                req.logout();
-                console.log('deleting token');
-                delete req.session.accessToken;
-                return res.redirect(req.originalUrl);
-            } else {
-                return next(err);
-            }
-        }
-    } else {
-        next();
     }
+
+    next();
 });
 
 // Set common helpers for the view
@@ -182,7 +168,17 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(function(err, req, res) {
+// Disabling no-unused-vars because Express cares about the arity of error handlers, so we need to
+// accept the next param even though we don't use it
+// eslint-disable-next-line no-unused-vars
+app.use(function(err, req, res, next) {
+    if (err instanceof Intercode.InvalidTokenError) {
+        req.logout();
+        console.log('deleting token');
+        delete req.session.accessToken;
+        return res.redirect(req.originalUrl);
+    }
+
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
