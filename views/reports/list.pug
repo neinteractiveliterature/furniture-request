@@ -1,4 +1,4 @@
-extends ../layout
+
 
 block content
     .row
@@ -36,11 +36,11 @@ block content
                                     small= moment(run.modified).format('YYYY-MM-DD h:mm A')
                             td= (run.no_furniture || run.requests.length)?'Yes':'No'
                                 if (checkPermission({permission: 'GM Coordinator', eventId: run.event.id}))
-                                    a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
+                                    a.btn.btn-sm.btn-outline-primary.mx-3.float-end(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
                                         i.fa.fa-edit
                                         |  Edit
                                 else if(run.no_furniture || run.requests.length)
-                                    a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
+                                    a.btn.btn-sm.btn-outline-primary.mx-3.float-end(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
                                         i.fa.fa-eye
                                         |  View
             tfoot

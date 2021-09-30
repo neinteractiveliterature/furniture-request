@@ -1,0 +1,85 @@
+nav(class=`navbar ${navbarClasses}`)
+  .container
+
+      a.navbar-brand(href='/') Furniture Requests
+      button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation")
+          span.navbar-toggler-icon
+
+      .collapse.navbar-collapse#navbar
+          ul.navbar-nav.flex-grow-1
+              li.nav-item(class= siteSection==='requests'?"active":null)
+                  a.nav-link(href="/") Home
+                      span.visually-hidden (current)
+              - if (checkPermission('GM Coordinator'))
+                  li.nav-item(class= siteSection==='furniture'?"active":null)
+                      a.nav-link(href='/furniture') Furniture
+              - if (checkPermission('Con Com'))
+                  li.nav-item.dropdown(class= siteSection==='reports'?"active":null)
+                      a.nav-link.dropdown-toggle#reportsDropdown(
+                          href='#'
+                          role='button'
+                          data-toggle='dropdown'
+                          aria-haspopup="true"
+                          aria-expanded="false") Reports
+                      .dropdown-menu(aria-labelledby="reportsDropdown")
+                          a.dropdown-item(href='/reports/list') Runs List
+                          a.dropdown-item(href='/reports/rooms') Rooms Report
+                          a.dropdown-item(href='/reports/furniture') Furniture Report
+                          a.dropdown-item(href='/reports/food') Food Report
+                          a.dropdown-item(href='/reports/special') Special Requests
+
+
+          ul.navbar-nav
+              - if (activeUser)
+
+                  li.nav-item.dropdown
+                      a.nav-link.dropdown-toggle#userDropdown(
+                          href='#'
+                          role='button'
+                          data-toggle='dropdown'
+                          aria-haspopup="true"
+                          aria-expanded="false")
+                          span.fa.fa-user
+                          |  #{activeUser.name}
+                      .dropdown-menu(aria-labelledby="userDropdown")
+                          a.dropdown-item(href='/logout') Logout
+
+              - else
+                  li.nav-item
+                      a.nav-link(href='/login') Login
+- if(breadcrumbs)
+  .container(role="breadcrumbs")
+      nav(aria-label='breadcrumb')
+          ol.breadcrumb
+              for breadcrumb in breadcrumbs.path
+                  li.breadcrumb-item
+                      a(href=breadcrumb.url)= breadcrumb.name
+              li.breadcrumb-item.active(aria-current="page")= breadcrumbs.current
+if (pageTitle)
+  .container(role="page_title")
+      if (typeof pageTitle === 'string')
+          h2=pageTitle
+      else
+          if (pageTitle.h1)
+              h1=pageTitle.h1
+          if (pageTitle.h2)
+              h2=pageTitle.h2
+          if (pageTitle.h3)
+              h3=pageTitle.h3
+          if (pageTitle.h4)
+              h4=pageTitle.h4
+
+
+
+.container(role="messages")
+  - if (messages.error)
+      div.alert.alert-danger(role='alert')
+          = messages.error.join(', ')
+
+  - if (messages.info)
+      div.alert.alert-info(role='alert')
+          = messages.info.join(', ')
+
+  - if (messages.success)
+      div.alert.alert-success(role='alert')
+          = messages.success.join(', ')

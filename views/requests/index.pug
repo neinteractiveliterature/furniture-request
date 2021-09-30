@@ -1,15 +1,13 @@
-extends ../layout
-
 block content
     .alert.alert-info.alert-dismissible.fade.show
+        button.btn.float-end.close(type="button" data-dismiss="alert" aria-label="Close")
+            span(aria-hidden="true") &times;
         p.my-1.
             Thanks for filling out this form. This will help us make sure that we're doing everything we can to allow you to run your game on time and seamlessly.
         p.my-1.
             Please select each of your functions that you are responsible for, and enter your furniture and food needs, or indicate that you have none.
         p.my-1.
              A map of the hotel function space is available at the  <a class='alert-link' href='#{config.app.interconBaseURL}/pages/hotel/layout' target='_blank'>Hotel Layout</a> page
-        button.close(type="button" data-dismiss="alert" aria-label="Close")
-            span(aria-hidden="true") &times;
     .table-responsive
         table.table.table-hover.table-sorted(data-order='[[ 2, "asc" ]]')
             thead
@@ -30,7 +28,7 @@ block content
                         td(data-order=moment(run.starts_at).format(YYYYMMDDHHmmss))= moment(run.starts_at).format('ddd, h:mm A')
                         td= _.pluck(run.rooms, 'name').join(', ')
                         td= (run.no_furniture || run.requests.length)?'Yes':'No'
-                            a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id)
+                            a.btn.btn-sm.btn-outline-primary.mx-3.float-end(href='/requests/'+run.event.id+'/'+run.id)
                                             i.fa.fa-edit
                                             |  #{(run.no_furniture || run.requests.length)?'Edit':'Create'}
 

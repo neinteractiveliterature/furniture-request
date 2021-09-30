@@ -1,4 +1,4 @@
-extends ../layout
+
 
 block content
     .row
@@ -31,18 +31,18 @@ block content
                         td
                             small= _.pluck(run.rooms, 'name').join(', ')
                         td
-                            a(href='mailto:'+run.created_by.email)= run.created_by.name 
+                            a(href='mailto:'+run.created_by.email)= run.created_by.name
 
                         td
                             .card
                                 .card-body.py-1= run.request
                         td
                             if checkPermission({permission: 'gm_liaison', eventId: run.event.id})
-                                a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
+                                a.btn.btn-sm.btn-outline-primary.mx-3.float-end(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
                                     i.fa.fa-edit
                                     |  Edit
                             else
-                                a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
+                                a.btn.btn-sm.btn-outline-primary.mx-3.float-end(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
                                     i.fa.fa-eye
                                     |  View
             tfoot
@@ -55,6 +55,6 @@ block content
                         th Request
                         th Actions
 
-    
+
 append scripts
     script(src='/javascripts/data-table.js')

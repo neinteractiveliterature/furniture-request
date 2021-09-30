@@ -1,4 +1,4 @@
-extends ../layout
+
 
 block content
     .row
@@ -30,7 +30,7 @@ block content
                                 for item in furniture
                                     td=room.requests[category][item.id] || 0
                                 td
-                                    a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/reports/rooms/'+room.id)
+                                    a.btn.btn-sm.btn-outline-primary.mx-3.float-end(href='/reports/rooms/'+room.id)
                                         i.fa.fa-eye
                                         |  View
             tfoot

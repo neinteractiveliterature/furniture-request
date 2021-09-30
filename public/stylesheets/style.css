@@ -1,13 +1,7 @@
 body {
   padding-top: 5rem;
 }
-body, .popover {
-    font-family: 'Open Sans', sans-serif;
-}
 
-.lead, h1, h2, h3, h4, h5, .blockquote {
-    font-family:  'Comfortaa', cursive;
-}
 #furnitureList .placeholder {
     border: 1px solid green;
     background-color: white;
@@ -24,17 +18,6 @@ body, .popover {
     border-bottom: 1px black dashed;
 }
 
-
 .furniture-request{
     font-size:10pt;
-}
-
-.intercon-menubar {
-    font-family: 'Comfortaa', cursive;
-    background:  #5A3F37;
-    background: -webkit-linear-gradient(to right, #2C7744 #5A3F37);
-    background: linear-gradient(to bottom right, #2C7744, #5A3F37);
-    -webkit-box-shadow: 0px 3px 7px 0px rgba(0,0,0,0.4);
-    -moz-box-shadow: 0px 3px 7px 0px rgba(0,0,0,0.4);
-    box-shadow: 0px 3px 7px 0px rgba(0,0,0,0.4);
 }

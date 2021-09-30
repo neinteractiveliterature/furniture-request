@@ -1,4 +1,4 @@
-extends ../layout
+
 
 block content
     .row
@@ -33,7 +33,7 @@ block content
                         for item in furniture
                             td= _.findWhere(run.requests, {furniture_id: item.id})?_.findWhere(run.requests, {furniture_id: item.id}).amount:0
                         td= (run.no_furniture || run.requests.length)?'Yes':'No'
-                            a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id)
+                            a.btn.btn-sm.btn-outline-primary.mx-3.float-end(href='/requests/'+run.event.id+'/'+run.id)
                                 if (run.no_furniture || run.requests.length)
                                     i.fa.fa-edit
                                     |  Edit

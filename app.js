@@ -138,8 +138,35 @@ app.use(async function(req, res, next){
     next();
 });
 
+// Fetch layout data from Intercode
+app.use(async function(req, res, next) {
+    const setFallbackContent = () => new Promise((resolve) => {
+        const navbarClasses = 'navbar navbar-expand-md navbar-dark bg-dark fixed-top intercon-menubar mb-4 fh-fixedHeader';
+        res.locals.navbarClasses = navbarClasses;
+        res.render('layout-fallback', {}, (err, html) => {
+            req.layoutData = {
+                content: html ?? '',
+                navbarClasses: navbarClasses,
+            };
+            // always resolve, even if we got no HTML back and errored
+            resolve();
+        });
+    });
+
+    if (req.intercode) {
+        try {
+            req.layoutData = await req.intercode.getLayoutData();
+        } catch (err) {
+            await setFallbackContent();
+        }
+    } else {
+        await setFallbackContent();
+    }
+    next();
+});
+
 // Set common helpers for the view
-app.use(function(req, res, next){
+app.use(async function(req, res, next) {
     res.locals.config = config;
     res.locals.session = req.session;
     res.locals.title = config.get('app.name');
@@ -148,6 +175,55 @@ app.use(function(req, res, next){
     res.locals.humanize = furnitureHelper.humanize;
     res.locals.teamMembers = furnitureHelper.teamMembers;
     res.locals.activeUser = req.user;
+    res.locals.navbarClasses = req.layoutData?.navbarClasses;
+
+    const originalRender = res.render;
+    const asyncOriginalRender = (view, options) => new Promise((resolve, reject) => {
+        originalRender(view, options, (err, html) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(html);
+            }
+        });
+    });
+    res.render = async (view, optionsOrNext, nextIfOptions) => {
+        let options = optionsOrNext;
+        let next = nextIfOptions;
+        if ('function' == typeof optionsOrNext) {
+            next = options;
+            options = {};
+        }
+        try {
+            if (req.layoutData) {
+                const { content: layoutHTML } = req.layoutData;
+                const [headHTML, navbarHTML, bodyHTML] = await Promise.all([
+                    asyncOriginalRender('head', options),
+                    asyncOriginalRender('navbar', options),
+                    asyncOriginalRender(view, options),
+                ]);
+                const finalHTML = layoutHTML
+                    .replace(/\{\{\s*content_for_head\s*\}\}/g, headHTML)
+                    .replace(/\{\{\s*content_for_navbar\s*\}\}/g, navbarHTML)
+                    .replace(/\{\{\s*content_for_layout\s*\}\}/g, bodyHTML);
+                if (next) {
+                    next(null, finalHTML);
+                } else {
+                    res.send(finalHTML);
+                }
+            } else {
+                originalRender(view, options, next);
+            }
+        } catch (err) {
+            // set locals, only providing error in development
+            res.locals.message = err.message;
+            res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+            // render the error page
+            res.status(err.status || 500);
+            originalRender('error');
+        }
+    };
     next();
 });
 
