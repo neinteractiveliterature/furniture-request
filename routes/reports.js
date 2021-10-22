@@ -82,7 +82,7 @@ async function roomsReport(req, res){
 }
 
 async function roomList(req, res){
-    const roomId = Number(req.params.id);
+    const roomId = req.params.id;
     const result = await reportHelper.getRoomData(req, roomId);
     const room = _.findWhere(result.rooms, {id: roomId});
     const categories = _.uniq(_.pluck(_.pluck(result.events, 'event_category'), 'name'));

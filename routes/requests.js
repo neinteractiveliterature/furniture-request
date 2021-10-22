@@ -28,8 +28,8 @@ async function list(req, res){
 }
 
 async function show(req, res){
-    const runId = Number(req.params.runId);
-    const eventId = Number(req.params.eventId);
+    const runId = req.params.runId;
+    const eventId = req.params.eventId;
     const backto = req.query.backto;
 
     const [intercodeRun, localRun, furniture, requests] = await Promise.all([
@@ -154,8 +154,8 @@ async function saveRoomRequest(req, runId, roomId, roomRequest) {
 }
 
 async function saveRequest(req, res){
-    const runId = Number(req.params.runId);
-    const eventId = Number(req.params.eventId);
+    const runId = req.params.runId;
+    const eventId = req.params.eventId;
     const requests = req.body.requests;
     const runData = req.body.run;
 
@@ -184,11 +184,11 @@ async function saveRequest(req, res){
 }
 
 function isTeamMemberOrGMLiaison(req, res, next){
-    const eventId = Number(req.params.eventId);
+    const eventId = req.params.eventId;
     permission({permission: 'gm_liaison', eventId:eventId}, '/requests')(req, res, next);
 }
 function isTeamMemberOrConcom(req, res, next){
-    const eventId = Number(req.params.eventId);
+    const eventId = req.params.eventId;
     permission({permission: 'Con Com', eventId:eventId}, '/requests')(req, res, next);
 }
 

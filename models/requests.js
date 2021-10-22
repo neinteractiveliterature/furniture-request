@@ -12,7 +12,7 @@ exports.getMultiple = async function(ids) {
 };
 
 exports.getMultipleByRunId = async function(runIds) {
-    const rows = await database.queryRows('select * from requests where run_id = ANY($1::int[])', [runIds]);
+    const rows = await database.queryRows('select * from requests where run_id = ANY($1::text[])', [runIds]);
     const rowsByRunId = _.groupBy(rows, (row) => row.run_id);
     return runIds.map((runId) => rowsByRunId[runId] ?? []);
 };

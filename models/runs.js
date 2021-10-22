@@ -6,7 +6,7 @@ exports.get = async function(id) {
 };
 
 exports.getMultiple = async function(ids) {
-    return await database.findMultipleById('select * from runs where id = ANY($1::int[])', ids);
+    return await database.findMultipleById('select * from runs where id = ANY($1::text[])', ids);
 };
 
 exports.list = async function() {
