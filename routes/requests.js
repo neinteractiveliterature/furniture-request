@@ -54,7 +54,7 @@ async function show(req, res){
     } else {
         const requestsForView = {};
         intercodeRun.rooms.forEach(function(room){
-            requestsForView['room-'+room.id] = {
+            requestsForView[`room-${room.id}`] = {
                 furniture: {},
                 no_furniture:false,
             };
@@ -64,9 +64,9 @@ async function show(req, res){
                     furniture_id:item.id
                 });
                 if (request){
-                    requestsForView['room-'+room.id].furniture['item-'+item.id] = request.amount;
+                    requestsForView[`room-${room.id}`].furniture[`item-${item.id}`] = request.amount;
                 } else {
-                    requestsForView['room-'+room.id].furniture['item-'+item.id] = null;
+                    requestsForView[`room-${room.id}`].furniture[`item-${item.id}`] = null;
                 }
             });
         });
@@ -117,8 +117,8 @@ async function saveRunRequest(req, requests, runId, eventId, runData) {
     }
 }
 
-async function saveRoomFurnitureRequest(req, runId, roomId, furnitureId, amount, noFurniture) {
-    const request = await req.models.requests.find(runId, roomId, furnitureId);
+async function saveRoomFurnitureRequest(req, runId, roomId, furnitureId, amount, noFurniture, runRequests) {
+    const request = runRequests.find((request) => request.room_id === roomId && request.furniture_id === furnitureId);
     if (request){
         if(!amount || noFurniture){
             await req.models.requests.delete(request.id);
@@ -139,7 +139,7 @@ async function saveRoomFurnitureRequest(req, runId, roomId, furnitureId, amount,
     }
 }
 
-async function saveRoomRequest(req, runId, roomId, roomRequest) {
+async function saveRoomRequest(req, runId, roomId, roomRequest, runRequests) {
     await Promise.all(_.keys(roomRequest.furniture).map(async (furnitureKey) => {
         const furnitureId = Number(furnitureKey.replace(/^item-/, ''));
         await saveRoomFurnitureRequest(
@@ -149,6 +149,7 @@ async function saveRoomRequest(req, runId, roomId, roomRequest) {
             furnitureId,
             Number(roomRequest.furniture[furnitureKey]),
             roomRequest.no_furniture,
+            runRequests,
         );
     }));
 }
@@ -159,14 +160,15 @@ async function saveRequest(req, res){
     const requests = req.body.requests;
     const runData = req.body.run;
 
-    req.session.requestsData = requests;
+    req.session.requestsData = requests ?? {};
     req.session.requestsData.run = runData;
+    const runRequests = await req.models.requests.listByRun(runId);
     try {
         await Promise.all([
-            async () => saveRunRequest(req, requests, runId, eventId, runData),
+            saveRunRequest(req, requests, runId, eventId, runData),
             ..._.keys(requests).map(async (roomKey) => {
-                const roomId = Number(roomKey.replace(/^room-/,''));
-                await saveRoomRequest(req, runId, roomId, requests[roomKey]);
+                const roomId = roomKey.replace(/^room-/,'');
+                await saveRoomRequest(req, runId, roomId, requests[roomKey], runRequests);
             }),
         ]);
     } catch (err) {

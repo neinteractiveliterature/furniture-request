@@ -179,9 +179,9 @@ async function furnitureReport(req, res){
     ]);
 
     const requests = requestsByItem.filter(request => {
-        return findRun(events, request.run_id);
+        return findEventContainingRun(events, request.run_id);
     }).map(request => {
-        const event = findRun(events, request.run_id);
+        const event = findEventContainingRun(events, request.run_id);
         const run = _.findWhere(event.runs, {id: request.run_id});
         return { ...request, event, run };
     });
@@ -208,7 +208,7 @@ async function furnitureReport(req, res){
     }
 }
 
-function findRun(events, runId){
+function findEventContainingRun(events, runId){
     for (let i = 0; i < events.length; i++){
         for (let j = 0; j < events[i].runs.length; j++){
             if (events[i].runs[j].id === runId){
