@@ -26,7 +26,7 @@
     "oauth": "^0.9.15",
     "parse-database-url": "^0.3.0",
     "passport": "^0.4.1",
-    "passport-oauth2": "^1.5.0",
+    "passport-oauth2": "1.6.1",
     "permission": "^1.1.0",
     "pg": "^8.7.1",
     "pluralize": "^7.0.0",
