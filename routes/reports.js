@@ -6,6 +6,7 @@ const moment = require('moment');
 const permission = require('../lib/permission');
 const furnitureHelper = require('../lib/furniture-helper');
 const reportHelper = require('../lib/report-helper');
+const async = require('async');
 
 function listReports(req, res){
     res.render('reports/index', {pageTitle: 'Furniture Reports'});
@@ -172,11 +173,11 @@ async function furnitureReportList(req, res){
 
 async function furnitureReport(req, res){
     const itemId = req.params.id;
-    const [requestsByItem, events, furniture] = await Promise.all([
-        req.models.requests.listByItem(itemId),
-        req.intercode.getEvents(),
-        req.models.furniture.get(itemId),
-    ]);
+    const { requestsByItem, events, furniture } = await async.parallel({
+        requestsByItem: async () => await req.models.requests.listByItem(itemId),
+        events: async () => await req.intercode.getEvents(),
+        furniture: async () => await req.models.furniture.get(itemId),
+    });
 
     const requests = requestsByItem.filter(request => {
         return findEventContainingRun(events, request.run_id);

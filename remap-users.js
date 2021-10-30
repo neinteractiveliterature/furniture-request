@@ -1,6 +1,7 @@
 const pg = require('pg');
 const parseDbUrl = require('parse-database-url');
 const _ = require('underscore');
+const async = require('async');
 
 const intercodeDatabaseUrl = process.argv[2];
 const furnitureDatabaseUrl = process.argv[3];
@@ -14,12 +15,10 @@ const intercodePool = new pg.Pool(parseDbUrl(intercodeDatabaseUrl));
 const furniturePool = new pg.Pool(parseDbUrl(furnitureDatabaseUrl));
 
 async function mergeUserIdColumn(tableName, columnName, userIdsToMerge) {
-    await Promise.all(
-        userIdsToMerge.map(([mergeFrom, mergeTo]) => furniturePool.query(
-            `update ${tableName} set ${columnName} = $1 where ${columnName} = $2`,
-            [mergeTo, mergeFrom]
-        ))
-    );
+    await async.each(userIdsToMerge, async ([mergeFrom, mergeTo]) => await furniturePool.query(
+        `update ${tableName} set ${columnName} = $1 where ${columnName} = $2`,
+        [mergeTo, mergeFrom]
+    ));
 }
 
 async function remapUsers() {
@@ -60,22 +59,20 @@ async function remapUsers() {
     });
 
     console.log('Merging references to users with multiple profiles');
-    await Promise.all([
-        mergeUserIdColumn('runs', 'created_by', userIdsToMerge),
-        mergeUserIdColumn('requests', 'created_by', userIdsToMerge),
-        mergeUserIdColumn('requests', 'updated_by', userIdsToMerge),
+    await async.parallel([
+        async () => await mergeUserIdColumn('runs', 'created_by', userIdsToMerge),
+        async () => await mergeUserIdColumn('requests', 'created_by', userIdsToMerge),
+        async () => await mergeUserIdColumn('requests', 'updated_by', userIdsToMerge),
     ]);
 
     console.log('Deleting users with merged profiles');
     await furniturePool.query('delete from users where id = ANY($1::int[])', [userIdsToMerge.map(([mergeFrom]) => mergeFrom)]);
 
     console.log('Updating user con profile IDs to user IDs');
-    await Promise.all(
-        userConProfileIdToUserId.map(([userConProfileId, userId]) => furniturePool.query(
-            'update users set intercode_id = $1 where intercode_id = $2',
-            [userId, userConProfileId]
-        ))
-    );
+    await async.each(userConProfileIdToUserId, async ([userConProfileId, userId]) => await furniturePool.query(
+        'update users set intercode_id = $1 where intercode_id = $2',
+        [userId, userConProfileId]
+    ));
 }
 
 remapUsers().catch((err) => {

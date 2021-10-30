@@ -5,6 +5,7 @@ const _ = require('underscore');
 const moment = require('moment');
 const permission = require('../lib/permission');
 const funitureHelper = require('../lib/furniture-helper');
+const async = require('async');
 
 const paths = {
     list: {
@@ -32,12 +33,12 @@ async function show(req, res){
     const eventId = req.params.eventId;
     const backto = req.query.backto;
 
-    const [intercodeRun, localRun, furniture, requests] = await Promise.all([
-        req.intercode.getRun(eventId, runId),
-        req.models.runs.get(runId),
-        req.models.furniture.list(),
-        req.models.requests.listByRun(runId),
-    ]);
+    const { intercodeRun, localRun, furniture, requests } = await async.parallel({
+        intercodeRun: async () => await req.intercode.getRun(eventId, runId),
+        localRun: async () => await req.models.runs.get(runId),
+        furniture: async () => await req.models.furniture.list(),
+        requests: async () => await req.models.requests.listByRun(runId),
+    });
     res.locals.run = intercodeRun;
     res.locals.requests = requests;
     if (localRun){
@@ -140,7 +141,7 @@ async function saveRoomFurnitureRequest(req, runId, roomId, furnitureId, amount,
 }
 
 async function saveRoomRequest(req, runId, roomId, roomRequest, runRequests) {
-    await Promise.all(_.keys(roomRequest.furniture).map(async (furnitureKey) => {
+    await async.each(_.keys(roomRequest.furniture), async (furnitureKey) => {
         const furnitureId = Number(furnitureKey.replace(/^item-/, ''));
         await saveRoomFurnitureRequest(
             req,
@@ -151,7 +152,7 @@ async function saveRoomRequest(req, runId, roomId, roomRequest, runRequests) {
             roomRequest.no_furniture,
             runRequests,
         );
-    }));
+    });
 }
 
 async function saveRequest(req, res){
@@ -164,9 +165,9 @@ async function saveRequest(req, res){
     req.session.requestsData.run = runData;
     const runRequests = await req.models.requests.listByRun(runId);
     try {
-        await Promise.all([
-            saveRunRequest(req, requests, runId, eventId, runData),
-            ..._.keys(requests).map(async (roomKey) => {
+        await async.parallel([
+            async () => await saveRunRequest(req, requests, runId, eventId, runData),
+            async () => await async.each(_.keys(requests), async (roomKey) => {
                 const roomId = roomKey.replace(/^room-/,'');
                 await saveRoomRequest(req, runId, roomId, requests[roomKey], runRequests);
             }),

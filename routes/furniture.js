@@ -3,6 +3,7 @@ const csrf = require('csurf');
 const _ = require('underscore');
 const funitureHelper = require('../lib/furniture-helper');
 const permission = require('../lib/permission');
+const async = require('async');
 
 async function list(req, res){
     res.locals.breadcrumbs = {
@@ -105,11 +106,11 @@ async function remove(req, res){
 
 async function sort(req, res){
     const order = req.body.order;
-    await Promise.all(order.map(async (id, idx) => {
+    await async.map(order, async (id, idx) => {
         const furniture = await req.models.furniture.get(id);
         furniture.display_order = idx;
         await req.models.funiture.update(id, furniture);
-    }));
+    });
     res.json({ success: true });
 }
 
