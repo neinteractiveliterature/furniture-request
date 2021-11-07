@@ -63,9 +63,7 @@ if (config.get('app.sessionType') === 'redis'){
     if (config.get('app.redisURL')){
         const redisToGo   = new URL(config.get('app.redisURL'));
         redisClient = redis.createClient(redisToGo.port, redisToGo.hostname);
-
-        redisClient.auth(redisToGo.auth.split(':')[1]);
-
+        redisClient.auth(redisToGo.password);
     } else {
         redisClient = redis.createClient();
     }
