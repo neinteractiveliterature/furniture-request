@@ -15,7 +15,7 @@ $(function () {
 });
 
 function getOrder($table){
-    var order = [];
+    const order = [];
     $table.find('tr').each(function () {
         order.push($(this).attr('data-click-id'));
     });

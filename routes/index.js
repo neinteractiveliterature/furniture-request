@@ -4,11 +4,11 @@ const _ = require('underscore');
 
 const permission = require('../lib/permission');
 
-function index(req, res, next){
+function index(req, res){
     res.redirect('/requests');
 }
 
-function logout(req, res, next){
+function logout(req, res){
     req.logout();
     delete req.session.accessToken;
     res.redirect('/');

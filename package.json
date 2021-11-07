@@ -2,27 +2,36 @@
   "name": "feedbacker",
   "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": ">= 14.0.0"
+  },
   "scripts": {
     "start": "node ./bin/www",
-    "lint": "eslint . --cache --ext .js"
+    "start:watch": "nodemon ./bin/www",
+    "lint": "eslint . --cache --ext .js",
+    "migrate": "node-pg-migrate"
   },
   "dependencies": {
-    "async": "^2.6.3",
+    "ansi-colors": "^4.1.1",
+    "async": "^3.2.2",
     "body-parser": "^1.19.0",
     "config": "^3.2.4",
-    "connect-redis": "^3.4.2",
+    "connect-redis": "^4.0.0",
     "cookie-parser": "^1.4.4",
     "csurf": "^1.10.0",
     "csv": "^5.3.1",
     "debug": "~2.6.9",
+    "dotenv": "^10.0.0",
     "express": "~4.16.0",
     "express-flash": "0.0.2",
+    "express-promise-router": "^4.1.0",
     "express-session": "^1.17.0",
-    "graphql-request": "^1.8.2",
+    "graphql-request": "^3.5.0",
     "http-errors": "~1.6.2",
     "method-override": "^3.0.0",
     "moment": "^2.24.0",
     "morgan": "~1.9.0",
+    "node-pg-migrate": "^6.0.0",
     "oauth": "^0.9.15",
     "parse-database-url": "^0.3.0",
     "passport": "^0.4.1",
@@ -30,8 +39,8 @@
     "permission": "^1.1.0",
     "pg": "^8.7.1",
     "pluralize": "^7.0.0",
-    "pug": "^2.0.4",
-    "redis": "^2.8.0",
+    "pug": "^3.0.0",
+    "redis": "^3.0.0",
     "underscore": "^1.9.1",
     "url": "^0.11.0",
     "validator": "^10.11.0"
@@ -43,6 +52,14 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "espree": "^9.0.0",
-    "graphql": "^15.6.0"
+    "graphql": "^15.6.0",
+    "nodemon": "^2.0.13"
+  },
+  "nodemonConfig": {
+    "watch": [
+      ".env",
+      "*.*"
+    ],
+    "ext": "js,mjs,json,pug"
   }
 }

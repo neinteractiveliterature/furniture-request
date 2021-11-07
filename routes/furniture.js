@@ -1,25 +1,23 @@
-const express = require('express');
+const PromiseRouter = require('express-promise-router');
 const csrf = require('csurf');
-const async = require('async');
 const _ = require('underscore');
 const funitureHelper = require('../lib/furniture-helper');
 const permission = require('../lib/permission');
+const async = require('async');
 
-function list(req, res, next){
+async function list(req, res){
     res.locals.breadcrumbs = {
         path: [
             { url: '/', name: 'Home'},
         ],
         current: 'Furniture'
     };
-    req.models.furniture.list(function(err, furnitures){
-        if (err) { return next(err); }
-        res.locals.furnitures = furnitures || [];
-        res.render('furniture/index', { pageTitle: 'Furniture' });
-    });
+    const furnitures = await req.models.furniture.list();
+    res.locals.furnitures = furnitures || [];
+    res.render('furniture/index', { pageTitle: 'Furniture' });
 }
 
-function showNew(req, res, next){
+async function showNew(req, res){
     res.locals.furniture = {
         name: null,
         description: null,
@@ -41,92 +39,82 @@ function showNew(req, res, next){
     }
     res.render('furniture/new');
 }
-function showEdit(req, res, next){
+
+async function showEdit(req, res){
     const id = req.params.id;
     res.locals.csrfToken = req.csrfToken();
 
 
-    req.models.furniture.get(id, function(err, furniture){
-        if (err) { return next(err); }
-        res.locals.furniture = furniture;
-        if (_.has(req.session, 'furnitureData')){
-            res.locals.furniture = req.session.furnitureData;
-            delete req.session.furnitureData;
-        }
-        res.locals.breadcrumbs = {
-            path: [
-                { url: '/', name: 'Home'},
-                { url: '/furniture', name: 'Furniture'},
-            ],
-            current: 'Edit: ' + furniture.name
-        };
+    const furniture = await req.models.furniture.get(id);
+    res.locals.furniture = furniture;
+    if (_.has(req.session, 'furnitureData')){
+        res.locals.furniture = req.session.furnitureData;
+        delete req.session.furnitureData;
+    }
+    res.locals.breadcrumbs = {
+        path: [
+            { url: '/', name: 'Home'},
+            { url: '/furniture', name: 'Furniture'},
+        ],
+        current: 'Edit: ' + furniture.name
+    };
 
-        res.render('furniture/edit');
-    });
+    res.render('furniture/edit');
 }
 
-function create(req, res, next){
+async function create(req, res){
     const furniture = req.body.furniture;
 
     req.session.furnitureData = furniture;
 
-    req.models.furniture.create(furniture, function(err, newFurnitureId){
-        if (err) {
-            req.flash('error', err.toString());
-            return res.redirect('/furniture/new');
-        }
+    try {
+        await req.models.furniture.create(furniture);
         delete req.session.furnitureData;
         req.flash('success', 'Created Furniture ' + furniture.name);
         res.redirect('/furniture');
-    });
+    } catch (err) {
+        req.flash('error', err.toString());
+        return res.redirect('/furniture/new');
+    }
 }
 
-function update(req, res, next){
+async function update(req, res){
     const id = req.params.id;
     const furniture = req.body.furniture;
     req.session.furnitureData = furniture;
 
-    req.models.furniture.get(id, function(err, current){
-        if (err) { return next(err); }
-        furniture.display_order = current.display_order;
+    const current = await req.models.furniture.get(id);
+    furniture.display_order = current.display_order;
 
-
-        req.models.furniture.update(id, furniture, function(err){
-            if (err){
-                req.flash('error', err.toString());
-                return (res.redirect('/furniture/'+id));
-            }
-            delete req.session.furnitureData;
-            req.flash('success', 'Updated Furniture ' + furniture.name);
-            res.redirect('/furniture');
-        });
-    });
-}
-
-function remove(req, res, next){
-    const id = req.params.id;
-    req.models.furniture.delete(id, function(err){
-        if (err) { return next(err); }
-        req.flash('success', 'Removed Furniture');
+    try {
+        await req.models.furniture.update(id, furniture);
+        delete req.session.furnitureData;
+        req.flash('success', 'Updated Furniture ' + furniture.name);
         res.redirect('/furniture');
-    });
+    } catch (err) {
+        req.flash('error', err.toString());
+        return (res.redirect('/furniture/'+id));
+    }
 }
 
-function sort(req, res, next){
+async function remove(req, res){
+    const id = req.params.id;
+    await req.models.furniture.delete(id);
+    req.flash('success', 'Removed Furniture');
+    res.redirect('/furniture');
+}
+
+async function sort(req, res){
     const order = req.body.order;
-    async.eachOf(order, function(id, idx, cb){
-        req.models.furniture.get(id, function(err, furniture){
-            if (err) { return cb(err); }
-            furniture.display_order = idx;
-            req.models.furniture.update(id, furniture, cb);
-        });
-    }, function(err){
-        if (err) { return next(err); }
-        res.json({success:true});
+    await async.map(order, async (id, idx) => {
+        const furniture = await req.models.furniture.get(id);
+        furniture.display_order = idx;
+        await req.models.funiture.update(id, furniture);
     });
+    res.json({ success: true });
 }
 
-const router = express.Router();
+const router = PromiseRouter();
 router.use(funitureHelper.setSection('furniture'));
 router.use(permission('gm_liaison'));
 
