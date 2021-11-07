@@ -1,2 +1,2 @@
 web: npm run start
-release: npm run migrate up
+release: PGSSLMODE=require npm run migrate up
