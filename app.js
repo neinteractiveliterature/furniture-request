@@ -151,10 +151,6 @@ app.use(function(req, res, next){
     next();
 });
 
-// TODO: Dave, can we get rid of this?  There's another instance of it on line 84 and having two
-// of them results in duplicate GraphQL queries.  Not sure if there's a reason we want to do it
-// in two places in the stack.
-// app.use(permission());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
