@@ -1,6 +1,7 @@
 {
     "app": {
         "dbURL": "DATABASE_URL",
+        "dbSSL": "DATABASE_SSL",
         "sessionType": "SESSION_TYPE",
         "sessionSecret": "SESSION_SECRET",
         "graphqlURL": "INTERCODE_GRAPHQL_URL",
@@ -14,5 +15,4 @@
         "clientSecret": "INTERCODE_OAUTH_CLIENT_SECRET",
         "callbackURL": "INTERCODE_CALLBACK_URL"
     }
-
 }

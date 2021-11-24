@@ -3,11 +3,14 @@
         "name": "Intercon Furniture Request System",
         "debug": false,
         "dbURL": "postgres://furniture:furniture@localhost:5432/furniture",
+        "dbSSL": false,
+        "dbPoolSize": 1,
         "sessionType": "local",
         "sessionSecret": "furniture",
         "graphqlURL": "graphqlURL",
         "interconBaseURL": "interconBaseURL",
-        "redisURL": false
+        "redisURL": false,
+        "debug:": true
     },
     "auth": {
         "authorizationURL": "authorizationURL",

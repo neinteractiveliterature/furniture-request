@@ -1,1 +1,7 @@
-{}
+{
+    "app": {
+        "debug:": false,
+        "dbSSL": true,
+    }
+}
+

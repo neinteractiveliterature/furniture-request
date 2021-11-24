@@ -31,9 +31,9 @@ body, .popover {
 
 .intercon-menubar {
     font-family: 'Comfortaa', cursive;
-    background:  #5A3F37;
-    background: -webkit-linear-gradient(to right, #2C7744 #5A3F37);
-    background: linear-gradient(to bottom right, #2C7744, #5A3F37);
+    background:  #45207C;
+    background: -webkit-linear-gradient(to right, #45207C #B767F0);
+    background: linear-gradient(to bottom right, #45207C, #B767F0);
     -webkit-box-shadow: 0px 3px 7px 0px rgba(0,0,0,0.4);
     -moz-box-shadow: 0px 3px 7px 0px rgba(0,0,0,0.4);
     box-shadow: 0px 3px 7px 0px rgba(0,0,0,0.4);

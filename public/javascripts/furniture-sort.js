@@ -7,7 +7,7 @@ $(function () {
         forceHelperSize: true,
         handle: '.handle',
         axis: 'y',
-        stop: function (event, ui) {
+        stop: function () {
             getOrder($(this));
         }
 
