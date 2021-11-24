@@ -1,7 +1,7 @@
 {
     "app": {
         "debug:": false,
-        "dbSSL": true,
+        "dbSSL": true
     }
 }
 
