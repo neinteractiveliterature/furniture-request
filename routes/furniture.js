@@ -116,7 +116,7 @@ async function sort(req, res){
 
 const router = PromiseRouter();
 router.use(funitureHelper.setSection('furniture'));
-router.use(permission('gm_liaison'));
+router.use(permission('GM Coordinator'));
 
 router.get('/', list);
 router.get('/new', csrf(), showNew);

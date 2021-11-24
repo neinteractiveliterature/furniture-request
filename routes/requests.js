@@ -188,7 +188,7 @@ async function saveRequest(req, res){
 
 function isTeamMemberOrGMLiaison(req, res, next){
     const eventId = req.params.eventId;
-    permission({permission: 'gm_liaison', eventId:eventId}, '/requests')(req, res, next);
+    permission({permission: 'GM Coordinator', eventId:eventId}, '/requests')(req, res, next);
 }
 function isTeamMemberOrConcom(req, res, next){
     const eventId = req.params.eventId;
