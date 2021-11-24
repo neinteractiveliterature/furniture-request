@@ -28,7 +28,7 @@ html(lang="en")
                         li.nav-item(class= siteSection==='requests'?"active":null)
                             a.nav-link(href="/") Home
                                 span.sr-only (current)
-                        - if (checkPermission('GM Coordinator'))
+                        - if (checkPermission('Con Com'))
                             li.nav-item(class= siteSection==='furniture'?"active":null)
                                 a.nav-link(href='/furniture') Furniture
                         - if (checkPermission('Con Com'))

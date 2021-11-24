@@ -1,25 +1,29 @@
 extends ../layout
 
 block content
-    a.btn.btn-success.mb-2( href='/furniture/new')
-        span.fa.fa-plus
-        |  New Furniture Item
+    if checkPermission('Hotel Liaison')
+        a.btn.btn-success.mb-2( href='/furniture/new')
+            span.fa.fa-plus
+            |  New Furniture Item
     .table-responsive
         table.table.table-sm.table-hover.table-striped
             thead
-                th Sort
+                if checkPermission('Hotel Liaison')
+                    th Sort
                 th(style='min-width:250px') Name
                 th Description
                 th Max Amount
                 th Internal
             tbody#furnitureList
                 for furniture in furnitures
-                    tr.clickable-row(
+
+                    tr(class=checkPermission('Hotel Liaison')?'clickable-row':'')(
                         data-click-object='furniture'
                         data-click-id=furniture.id
                     )
-                        th.handle
-                            span.fa.fa-bars
+                        if checkPermission('Hotel Liaison')
+                            th.handle
+                                span.fa.fa-bars
                         th= furniture.name
                         td= furniture.description
                         td= furniture.max_amount

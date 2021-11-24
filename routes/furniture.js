@@ -116,18 +116,18 @@ async function sort(req, res){
 
 const router = PromiseRouter();
 router.use(funitureHelper.setSection('furniture'));
-router.use(permission('GM Coordinator'));
+router.use(permission('Con Com'));
 
 router.get('/', list);
-router.get('/new', csrf(), showNew);
-router.get('/:id', csrf(), showEdit);
+router.get('/new', csrf(), permission('Hotel Liaison'), showNew);
+router.get('/:id', csrf(), permission('Hotel Liaison'), showEdit);
 
-router.post('/', csrf(), create);
+router.post('/', csrf(), permission('Hotel Liaison'), create);
 
-router.put('/sort', sort);
-router.put('/:id', csrf(), update);
+router.put('/sort', permission('Hotel Liaison'), sort);
+router.put('/:id', csrf(), permission('Hotel Liaison'), update);
 
-router.delete('/:id', remove);
+router.delete('/:id', permission('Hotel Liaison'), remove);
 
 module.exports = router;
 
