@@ -1,6 +1,6 @@
 {
-  "name": "feedbacker",
-  "version": "0.0.0",
+  "name": "furniture2",
+  "version": "0.2.0",
   "private": true,
   "engines": {
     "node": ">= 14.0.0"
