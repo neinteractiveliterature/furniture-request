@@ -10,7 +10,7 @@
         "graphqlURL": "graphqlURL",
         "interconBaseURL": "interconBaseURL",
         "redisURL": false,
-        "debug:": true
+        "debug": true
     },
     "auth": {
         "authorizationURL": "authorizationURL",
