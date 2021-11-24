@@ -66,15 +66,17 @@ block content
                 .col-md-12
                     .card
                         h3.card-header Additional Items
-                        .card-body
+                        .card-body.py-2
                             h5.card-title
                                 .control-label(for="run_food") Food and Bartending for this Run
                             .card-text
-                                p.form-text.muted.
+                                p.form-text.text-muted.my-1.
                                     The hotel can provide food or food and bartending service at GM cost. <strong> INTERCON CANNOT PAY FOR THESE SERVICES.</strong> Do you need either of them?
 
-                                p.form-text.muted.
+                                p.form-text.text-muted.my-1.
                                     Please note that these are the ONLY way you can serve food or alcohol at your game. As per the contract with the hotel, GMs cannot bring food or drink into your game or event, and NO alcohol is allowed in con space without a hotel bartender present. More information about pricing is available at <a href='#{config.app.interconBaseURL}/pages/gmpolicies#FoodService' target='_blank'> GM Benefits and Policies</a>, the menus are available at <a href='#{config.app.interconBaseURL}/pages/hotel/menu' target='_blank'>Hotel Menu</a>, or contact the <a href='mailto:hotel@interconlarp.org'>Hotel Liaison</a>
+                                p.form-text.text-muted.my-1.
+                                    If you do not need food or bartending, please leave this field blank
                                 if checkPermission({permission: 'GM Coordinator', eventId: run.event.id})
                                     textarea.form-control(name="run[food]" id="run_food" rows=3)
                                        = run.food
@@ -82,13 +84,15 @@ block content
                                     .card
                                         .card-body= run.food || 'No food requested'
 
-                        .card-body
+                        .card-body.py-2
                             h5.card-title
                                 label.control-label(for="run_notes") Other Notes
 
                             .card-text
-                                p.form-text.muted.
+                                p.form-text.text-muted.my-1.
                                     Is there anything else we need to know?  Anything not covered by the previous sections, strange requests, and so on?
+                                p.form-text.text-muted.my-1.
+                                    If you don't have anythig for this, please leave this field blank.
                                 if checkPermission({permission: 'GM Coordinator', eventId: run.event.id})
                                     textarea.form-control(name="run[notes]" id="run_notes" rows=3)
                                         = run.notes
