@@ -19,7 +19,7 @@ block content
                     th(style='min-width:132px') Request Entered
             tbody
                 for run in runs
-                    if (run.event.category !== 'Volunteer event')
+                    if !(run.event.category === 'Volunteer event' && run.event.title.match(/^Ops$/i)
                         tr(
                             data-click-object='requests'
                             data-click-id=run.event.id+'/'+run.id

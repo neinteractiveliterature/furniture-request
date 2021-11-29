@@ -29,7 +29,7 @@ async function listReport(req, res){
     if (req.query.export){
         const data = [['Event', 'Type', 'Run', 'Room(s)', 'Modified', 'Request Entered']];
         _.sortBy(runs, 'starts_at').forEach(function(run){
-            if (run.event.category === 'Volunteer event') { return; }
+            if (run.event.category === 'Volunteer event' && run.event.title.match(/^Ops$/i) { return; }
             data.push([
                 run.event.title,
                 furnitureHelper.humanize(run.event.category),
