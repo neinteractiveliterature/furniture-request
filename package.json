@@ -18,7 +18,7 @@
     "config": "^3.2.4",
     "connect-pg-simple": "^7.0.0",
     "connect-redis": "^4.0.0",
-    "cookie-parser": "^1.4.4",
+    "cookie-parser": "1.4.6",
     "csurf": "^1.10.0",
     "csv": "^5.3.1",
     "debug": "~2.6.9",
