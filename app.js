@@ -19,6 +19,7 @@ const models = require('./lib/models');
 
 const Intercode = require('./lib/intercode');
 const permission = require('./lib/permission');
+const database = require('./lib/database');
 
 const furnitureHelper = require('./lib/furniture-helper');
 
@@ -57,18 +58,30 @@ const sessionConfig = {
     resave: false,
 };
 
-if (config.get('app.sessionType') === 'redis'){
-    const RedisStore = require('connect-redis')(session);
-    let redisClient = null;
-    if (config.get('app.redisURL')){
-        const redisToGo   = new URL(config.get('app.redisURL'));
-        redisClient = redis.createClient(redisToGo.port, redisToGo.hostname);
-        redisClient.auth(redisToGo.password);
-    } else {
-        redisClient = redis.createClient();
+switch (config.get('app.sessionType')){
+    case 'redis': {
+        const RedisStore = require('connect-redis')(session);
+        let redisClient = null;
+        if (config.get('app.redisURL')){
+            const redisToGo   = new URL(config.get('app.redisURL'));
+            redisClient = redis.createClient(redisToGo.port, redisToGo.hostname);
+            redisClient.auth(redisToGo.password);
+        } else {
+            redisClient = redis.createClient();
+        }
+        sessionConfig.store = new RedisStore({ client: redisClient });
+        sessionConfig.resave = true;
+        break;
     }
-    sessionConfig.store = new RedisStore({ client: redisClient });
-    sessionConfig.resave = true;
+
+    case 'postgresql': {
+        const pgSession = require('connect-pg-simple')(session);
+        sessionConfig.store = new pgSession({
+            pool: database.pool,
+            tableName: 'session'
+        });
+        break;
+    }
 }
 
 app.use(session(sessionConfig));
