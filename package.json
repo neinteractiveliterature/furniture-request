@@ -19,7 +19,7 @@
     "connect-pg-simple": "^7.0.0",
     "connect-redis": "^4.0.0",
     "cookie-parser": "^1.4.4",
-    "csurf": "^1.10.0",
+    "csurf": "1.11.0",
     "csv": "^5.3.1",
     "debug": "~2.6.9",
     "dotenv": "^10.0.0",
