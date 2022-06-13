@@ -27,7 +27,7 @@
     "express-flash": "0.0.2",
     "express-promise-router": "^4.1.0",
     "express-session": "^1.17.0",
-    "graphql-request": "^3.5.0",
+    "graphql-request": "3.7.0",
     "http-errors": "~1.6.2",
     "method-override": "^3.0.0",
     "moment": "^2.24.0",
