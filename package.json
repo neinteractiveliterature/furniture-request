@@ -54,7 +54,7 @@
     "eslint-plugin-promise": "^5.1.0",
     "espree": "^9.0.0",
     "graphql": "^15.6.0",
-    "nodemon": "^2.0.13"
+    "nodemon": "2.0.20"
   },
   "nodemonConfig": {
     "watch": [
