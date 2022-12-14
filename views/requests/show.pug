@@ -3,12 +3,16 @@ extends ../layout
 block content
     if ! backto
         .alert.alert-info.alert-dismissible.fade.show
-            p.my-1.
+            p.my-1
                 Descriptions for items can be viewed by mousing over, clicking, or tapping the item name
-            p.my-1.
-                More information about some of the things on this form is available at the <a class='alert-link' href='#{config.app.interconBaseURL}/pages/gmpolicies' target='_blank'> GM Benefits and Policies</a> document.
-            p.my-1.
-               A map of the hotel function space is available at the  <a class='alert-link' href='#{config.app.interconBaseURL}/pages/hotel/layout' target='_blank'>Hotel Layout</a> page
+            p.my-1
+                More information about some of the things on this form is available at the
+                a.alert-link.mx-1(href='#{config.app.interconBaseURL}/pages/gmpolicies' target='_blank') GM Benefits and Policies
+                | document.
+            p.my-1
+               A map of the hotel function space is available at the
+               a.alert-link.mx-1(href='#{config.app.interconBaseURL}/pages/hotel/layout' target='_blank') Hotel Layout
+               | page
 
             button.close(type="button" data-dismiss="alert" aria-label="Close")
                 span(aria-hidden="true") &times;
@@ -44,7 +48,7 @@ block content
                                             span.furniture-popover.popup-indicator(
                                                 data-container="body"
                                                 data-toggle="popover"
-                                                data-trigger="hover"
+                                                data-trigger="hover click"
                                                 data-placement="top"
                                                 data-content=item.description)= item.name
                                         else
