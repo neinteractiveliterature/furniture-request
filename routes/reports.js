@@ -7,6 +7,7 @@ const permission = require('../lib/permission');
 const furnitureHelper = require('../lib/furniture-helper');
 const reportHelper = require('../lib/report-helper');
 const async = require('async');
+const config = require('config');
 
 function listReports(req, res){
     res.render('reports/index', {pageTitle: 'Furniture Reports'});
@@ -153,14 +154,15 @@ async function foodReport(req, res){
 
 async function specialRequestsReport(req, res){
     const runs = await reportHelper.getRequestData(req, 'notes');
+    const specialRequestName = config.get('app.specialRequestsName');
     if (req.query.export){
         const output = await reportHelper.getRequestCSV(runs);
-        res.attachment('SpecialRequestsExport.csv');
+        res.attachment(`${specialRequestName}Export.csv`);
         res.end(output);
     } else {
         res.locals.runs = runs;
-        res.locals.breadcrumbs = reportHelper.getBreadcrumbs('Special Requests Report');
-        res.render('reports/specialRequests', { pageTitle: 'Special Requests Report' });
+        res.locals.breadcrumbs = reportHelper.getBreadcrumbs(`${specialRequestName} Report`);
+        res.render('reports/specialRequests', { pageTitle: `${specialRequestName} Report` });
     }
 }
 
