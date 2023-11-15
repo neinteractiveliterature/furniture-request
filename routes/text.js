@@ -96,7 +96,7 @@ async function update(req, res){
 }
 
 const router = PromiseRouter();
-router.use(furnitureHelper.setSection('text'));
+router.use(furnitureHelper.setSection('admin'));
 router.use(permission('Con Com'));
 
 router.get('/', list);

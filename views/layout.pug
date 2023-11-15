@@ -29,11 +29,17 @@ html(lang="en")
                             a.nav-link(href="/") Home
                                 span.sr-only (current)
                         - if (checkPermission('Con Com'))
-                            li.nav-item(class= siteSection==='furniture'?"active":null)
-                                a.nav-link(href='/furniture') Furniture
-                        - if (checkPermission('Admin'))
-                            li.nav-item(class= siteSection==='text'?"active":null)
-                                a.nav-link(href='/text') Display Text
+                            li.nav-item.dropdown(class= siteSection==='admin'?"active":null)
+                                a.nav-link.dropdown-toggle#adminDropdown(
+                                    href='#'
+                                    role='button'
+                                    data-toggle='dropdown'
+                                    aria-haspopup="true"
+                                    aria-expanded="false") Admin
+                                .dropdown-menu(aria-labelledby="adminDropdown")
+                                    a.dropdown-item(href='/furniture') Furniture
+                                    if checkPermission('Admin')
+                                        a.dropdown-item(href='/text') Display Text
 
                         - if (checkPermission('Con Com'))
                             li.nav-item.dropdown(class= siteSection==='reports'?"active":null)

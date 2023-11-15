@@ -115,7 +115,7 @@ async function sort(req, res){
 }
 
 const router = PromiseRouter();
-router.use(furnitureHelper.setSection('furniture'));
+router.use(furnitureHelper.setSection('admin'));
 router.use(permission('Con Com'));
 
 router.get('/', list);
