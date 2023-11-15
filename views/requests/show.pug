@@ -1,19 +1,9 @@
 extends ../layout
 
 block content
-    if ! backto
+    if ! backto || true
         .alert.alert-info.alert-dismissible.fade.show
-            p.my-1.
-                Descriptions for items can be viewed by mousing over, clicking, or tapping the item name
-            p.my-1
-                span More information about some of the things on this form is available at the
-                a.alert-link.mx-1(href=`${config.app.interconBaseURL}/pages/gmpolicies` target='_blank') GM Benefits and Policies
-                span document.
-            p.my-1
-               span A map of the hotel function space is available at the
-               a.alert-link.mx-1(href=`${config.app.interconBaseURL}/pages/hotel/layout` target='_blank') Hotel Layout
-               span page
-
+            | !{displayNotes.show}
             button.close(type="button" data-dismiss="alert" aria-label="Close")
                 span(aria-hidden="true") &times;
 
@@ -39,8 +29,9 @@ block content
                                     )
                                 label.form-check-label(for='request_'+room.id+'_no_furniture')
                                     | No furniture needed for this room
-                                .form-text.text-muted
-                                    | For events in the Parlors, or for Forum@Intercon events, this indicates that the preset is sufficient
+                                if !config.get('app.arisiaMode')
+                                    .form-text.text-muted
+                                        | For events in the Parlors, or for Forum@Intercon events, this indicates that the preset is sufficient
                             for item in furniture
                                 .row.border-top.py-1
                                     .col-md-3.offset-md-1
@@ -74,13 +65,8 @@ block content
                             h5.card-title
                                 .control-label(for="run_food") Food and Bartending for this Run
                             .card-text
-                                p.form-text.text-muted.my-1.
-                                    The hotel can provide food or food and bartending service at GM cost. <strong> INTERCON CANNOT PAY FOR THESE SERVICES.</strong> Do you need either of them?
+                                | !{displayNotes.food}
 
-                                p.form-text.text-muted.my-1.
-                                    Please note that these are the ONLY way you can serve food or alcohol at your game. As per the contract with the hotel, GMs cannot bring food or drink into your game or event, and NO alcohol is allowed in con space without a hotel bartender present. More information about pricing is available at <a href='#{config.app.interconBaseURL}/pages/gmpolicies#FoodService' target='_blank'> GM Benefits and Policies</a>, the menus are available at <a href='#{config.app.interconBaseURL}/pages/hotel/menu' target='_blank'>Hotel Menu</a>, or contact the <a href='mailto:hotel@interconlarp.org'>Hotel Liaison</a>
-                                p.form-text.text-muted.my-1.
-                                    If you do not need food or bartending, please leave this field blank
                                 if checkPermission({permission: 'GM Coordinator', eventId: run.event.id})
                                     textarea.form-control(name="run[food]" id="run_food" rows=3)
                                        = run.food
@@ -90,13 +76,10 @@ block content
 
                         .card-body.py-2
                             h5.card-title
-                                label.control-label(for="run_notes") Other Notes
+                                label.control-label(for="run_notes")=config.get('app.specialRequestsName')
 
                             .card-text
-                                p.form-text.text-muted.my-1.
-                                    Is there anything else we need to know?  Anything not covered by the previous sections, strange requests, and so on?
-                                p.form-text.text-muted.my-1.
-                                    If you don't have anythig for this, please leave this field blank.
+                                | !{displayNotes.special}
                                 if checkPermission({permission: 'GM Coordinator', eventId: run.event.id})
                                     textarea.form-control(name="run[notes]" id="run_notes" rows=3)
                                         = run.notes

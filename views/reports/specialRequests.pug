@@ -37,7 +37,7 @@ block content
                             .card
                                 .card-body.py-1= run.request
                         td
-                            if checkPermission({permission: 'gm_liaison', eventId: run.event.id})
+                            if checkPermission({permission: 'GM Coordinator', eventId: run.event.id})
                                 a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
                                     i.fa.fa-edit
                                     |  Edit

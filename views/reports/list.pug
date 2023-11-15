@@ -32,7 +32,7 @@ block content
                             td
                                 small= _.pluck(run.rooms, 'name').join(', ')
                             td(data-order=moment(run.modified).format(YYYYMMDDHHmmss))
-                                if (run.modified)
+                                if (run.modified & run.modified > 0)
                                     small= moment(run.modified).format('YYYY-MM-DD h:mm A')
                             td= (run.no_furniture || run.requests.length)?'Yes':'No'
                                 if (checkPermission({permission: 'GM Coordinator', eventId: run.event.id}))

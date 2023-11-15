@@ -1,7 +1,7 @@
 const PromiseRouter = require('express-promise-router');
 const csrf = require('csurf');
 const _ = require('underscore');
-const funitureHelper = require('../lib/furniture-helper');
+const furnitureHelper = require('../lib/furniture-helper');
 const permission = require('../lib/permission');
 const async = require('async');
 
@@ -109,13 +109,13 @@ async function sort(req, res){
     await async.map(order, async (id, idx) => {
         const furniture = await req.models.furniture.get(id);
         furniture.display_order = idx;
-        await req.models.funiture.update(id, furniture);
+        await req.models.furniture.update(id, furniture);
     });
     res.json({ success: true });
 }
 
 const router = PromiseRouter();
-router.use(funitureHelper.setSection('furniture'));
+router.use(furnitureHelper.setSection('furniture'));
 router.use(permission('Con Com'));
 
 router.get('/', list);

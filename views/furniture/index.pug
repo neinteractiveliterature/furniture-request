@@ -17,7 +17,7 @@ block content
             tbody#furnitureList
                 for furniture in furnitures
 
-                    tr(class=checkPermission('Hotel Liaison')?'clickable-row':'')(
+                    tr(class=checkPermission('Hotel Liaison')?'clickable-row':''
                         data-click-object='furniture'
                         data-click-id=furniture.id
                     )

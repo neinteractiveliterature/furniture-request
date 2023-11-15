@@ -4,7 +4,7 @@ const csrf = require('csurf');
 const _ = require('underscore');
 const moment = require('moment');
 const permission = require('../lib/permission');
-const funitureHelper = require('../lib/furniture-helper');
+const furnitureHelper = require('../lib/furniture-helper');
 const async = require('async');
 
 const paths = {
@@ -23,9 +23,12 @@ async function list(req, res){
         current: 'Home'
     };
     const data = await req.intercode.getMemberEvents( req.user.intercode_id);
-    const runs = await funitureHelper.getRunList(data);
+    const runs = await furnitureHelper.getRunList(data);
     res.locals.runs = _.sortBy(runs, 'starts_at');
-    res.render('requests/index', {pageTitle: `Requests for ${req.user.name}`});
+    const requestNote = await req.models.display_text.getByName('requestIndex');
+    res.locals.requestIndexNote = furnitureHelper.renderText(requestNote.content, res);
+    const convention = await req.intercode.getConvention();
+    res.render('requests/index', {pageTitle: `${convention.name} Requests for ${req.user.name}`});
 }
 
 async function show(req, res){
@@ -33,14 +36,18 @@ async function show(req, res){
     const eventId = req.params.eventId;
     const backto = req.query.backto;
 
-    const { intercodeRun, localRun, furniture, requests } = await async.parallel({
+    const { intercodeRun, localRun, furniture, requests, requestShowNote, requestFoodNote, requestSpecialNote } = await async.parallel({
         intercodeRun: async () => await req.intercode.getRun(eventId, runId),
         localRun: async () => await req.models.runs.get(runId),
         furniture: async () => await req.models.furniture.list(),
         requests: async () => await req.models.requests.listByRun(runId),
+        requestShowNote: async () => await req.models.display_text.getByName('requestShow'),
+        requestFoodNote: async () => await req.models.display_text.getByName('requestFood'),
+        requestSpecialNote: async () => await req.models.display_text.getByName('requestSpecial')
     });
     res.locals.run = intercodeRun;
     res.locals.requests = requests;
+
     if (localRun){
         res.locals.run.notes = localRun.notes;
         res.locals.run.food = localRun.food;
@@ -85,10 +92,16 @@ async function show(req, res){
         res.locals.breadcrumbs.path = res.locals.breadcrumbs.path.concat(paths[backto].path);
     }
 
+    res.locals.displayNotes = {
+        show: furnitureHelper.renderText(requestShowNote.content, res),
+        food: furnitureHelper.renderText(requestFoodNote.content, res),
+        special: furnitureHelper.renderText(requestSpecialNote.content, res)
+    };
+
     res.render('requests/show', {pageTitle: {
         h2: res.locals.run.event.title,
         h3: moment(res.locals.run.starts_at).format('ddd, h:mm A'),
-        h4: funitureHelper.teamMembers(res.locals.run.event)
+        h4: furnitureHelper.teamMembers(res.locals.run.event)
     }});
 }
 
@@ -197,7 +210,7 @@ function isTeamMemberOrConcom(req, res, next){
 
 
 const router = PromiseRouter();
-router.use(funitureHelper.setSection('requests'));
+router.use(furnitureHelper.setSection('requests'));
 router.use(permission('login'));
 
 router.get('/', list);

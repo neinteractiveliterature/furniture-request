@@ -10,7 +10,7 @@ html(lang="en")
         title= title
         block styles
             link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css")
-            link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Amarante|Open+Sans:400,400i,700,700i&display=swap")
+            link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i&display=swap")
             link(href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css", rel="stylesheet", integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN", crossorigin="anonymous")
             link(rel='stylesheet' href='https://cdn.datatables.net/v/bs4/dt-1.10.20/fh-3.1.6/datatables.min.css')
             link(rel='stylesheet',href='/stylesheets/style.css')
@@ -31,6 +31,10 @@ html(lang="en")
                         - if (checkPermission('Con Com'))
                             li.nav-item(class= siteSection==='furniture'?"active":null)
                                 a.nav-link(href='/furniture') Furniture
+                        - if (checkPermission('Admin'))
+                            li.nav-item(class= siteSection==='text'?"active":null)
+                                a.nav-link(href='/text') Display Text
+
                         - if (checkPermission('Con Com'))
                             li.nav-item.dropdown(class= siteSection==='reports'?"active":null)
                                 a.nav-link.dropdown-toggle#reportsDropdown(
@@ -44,7 +48,7 @@ html(lang="en")
                                     a.dropdown-item(href='/reports/rooms') Rooms Report
                                     a.dropdown-item(href='/reports/furniture') Furniture Report
                                     a.dropdown-item(href='/reports/food') Food Report
-                                    a.dropdown-item(href='/reports/special') Special Requests
+                                    a.dropdown-item(href='/reports/special')=config.get('app.specialRequestsName')
 
 
                     ul.navbar-nav.float-right

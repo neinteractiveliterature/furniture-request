@@ -1,12 +1,15 @@
 {
     "app": {
+        "name": "APP_NAME",
         "dbURL": "DATABASE_URL",
         "dbSSL": "DATABASE_SSL",
         "sessionType": "SESSION_TYPE",
         "sessionSecret": "SESSION_SECRET",
         "graphqlURL": "INTERCODE_GRAPHQL_URL",
         "interconBaseURL": "INTERCON_BASE_URL",
-        "redisURL": "REDISTOGO_URL"
+        "redisURL": "REDISTOGO_URL",
+        "specialRequestsName": "SPECIAL_REQUEST_NAME",
+        "arisiaMode": "ARISIA_MODE"
     },
     "auth": {
         "authorizationURL": "INTERCODE_URL",
