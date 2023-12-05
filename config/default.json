@@ -10,7 +10,9 @@
         "graphqlURL": "graphqlURL",
         "interconBaseURL": "interconBaseURL",
         "redisURL": false,
-        "debug": true
+        "debug": true,
+        "specialRequestsName": "Other Notes",
+        "arisiaMode" : false
     },
     "auth": {
         "authorizationURL": "authorizationURL",

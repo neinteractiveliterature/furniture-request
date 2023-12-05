@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+    .table-responsive
+        table.table.table-sm.table-hover.table-striped
+            thead
+                th(style='min-width:250px') Name
+                th Description
+
+            tbody#textList
+                for text in texts
+                    tr(class=checkPermission('Hotel Liaison')?'clickable-row':''
+                        data-click-object='text'
+                        data-click-id=text.id
+                    )
+                        th= text.name
+                        td= text.description
+
+append scripts
+    script(src='/javascripts/data-table.js')
+

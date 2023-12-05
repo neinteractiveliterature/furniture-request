@@ -28,6 +28,7 @@ const usersRouter = require('./routes/users');
 const requestsRouter = require('./routes/requests');
 const furnitureRouter = require('./routes/furniture');
 const reportsRouter = require('./routes/reports');
+const textRouter = require('./routes/text');
 
 const app = express();
 
@@ -150,7 +151,7 @@ app.use(async function(req, res, next){
 });
 
 // Set common helpers for the view
-app.use(function(req, res, next){
+app.use(async function(req, res, next){
     res.locals.config = config;
     res.locals.session = req.session;
     res.locals.title = config.get('app.name');
@@ -168,6 +169,7 @@ app.use('/users', usersRouter);
 app.use('/requests', requestsRouter);
 app.use('/furniture', furnitureRouter);
 app.use('/reports', reportsRouter);
+app.use('/text', textRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
