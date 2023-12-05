@@ -1,0 +1,16 @@
+extends ../layout
+
+block content
+    .row
+        .col-sm-8.offset-sm-2
+            .card
+                .card-header= 'Edit Text: ' + text.name
+                .card-body
+                    form.form.needs-validation(method="POST" action="/text/" + text.id novalidate)
+                        input(type="hidden", name="_method",  value="PUT")
+                        input(type="hidden", name='_csrf',value=csrfToken)
+                        input(type="hidden", name='text[id]',value=text.id)
+                        include ./_form.pug
+
+append scripts
+    script(src='/javascripts/validator.js')

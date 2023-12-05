@@ -1,0 +1,23 @@
+
+.form-group
+    label.control-label(for="text_name") Name
+    input.form-control(type="text",placeholder="Name",name="text[name]",value=text.name,id='text_name',required, disabled=text.id)
+    div.invalid-feedback Please choose a valid name for this item
+
+.form-group
+    label.control-label(for="text_description") Description
+    textarea.form-control(name="text[description]" id="text_description")
+        = text.description
+
+
+.form-group
+    label.control-label(for="text_content") Content
+    textarea.form-control(name="text[content]" id="text_content" rows=20)
+        = text.content
+
+
+.form-group
+    button.btn.btn-primary(type="submit")= text.id?'Update':'Create'
+    a.btn.btn-link(href="/text") Cancel
+
+
