@@ -6,7 +6,7 @@ body, .popover {
 }
 
 .lead, h1, h2, h3, .blockquote, .navbar-brand {
-    font-family:  'Amarante', cursive;
+    font-family:  'Open Sans', cursive;
 }
 #furnitureList .placeholder {
     border: 1px solid green;
