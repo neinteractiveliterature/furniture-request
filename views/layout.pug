@@ -17,10 +17,10 @@ html(lang="en")
             link(rel='stylesheet',href='/css')
 
     body
-        nav.navbar.navbar-expand-md.navbar-dark.bg-dark.fixed-top.intercon-menubar.mb-4.fh-fixedHeader
+        nav.navbar.navbar-expand-md.navbar-dark.fixed-top.intercon-menubar.mb-4.fh-fixedHeader
             .container
 
-                a.navbar-brand(href='/') Furniture Requests
+                a.navbar-brand(href='/')= config.get('app.name')
                 button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation")
                     span.navbar-toggler-icon
 
