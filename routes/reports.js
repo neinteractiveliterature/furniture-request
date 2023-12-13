@@ -50,6 +50,63 @@ async function listReport(req, res){
     }
 }
 
+async function fullRunsReport(req, res){
+
+    const result = await async.parallel({
+        runs: async function(){
+            const events = await req.intercode.getEvents();
+            return furnitureHelper.getRunList(events);
+        },
+        furniture: async () => await req.models.furniture.list(),
+    });
+
+    if (req.query.export){
+        const data = [];
+        const header = ['Event'];
+        if (!config.get('app.arisiaMode')){
+            header.push('Type');
+        }
+        header.push('Start');
+        header.push('End');
+        header.push('Room');
+        for (const item of result.furniture){
+            header.push(item.name);
+        }
+        header.push('Food');
+        header.push(config.get('app.specialRequestsName'));
+        data.push(header);
+
+        for (const run of _.sortBy(result.runs, 'starts_at')){
+            for (const room of run.rooms){
+                const row = [run.event.title];
+                if (!config.get('app.arisiaMode')){
+                    row.push(furnitureHelper.humanize(run.event.category));
+                }
+                row.push(moment(run.starts_at).format('ddd, h:mm A'));
+                row.push(moment(run.ends_at).format('ddd, h:mm A'));
+                row.push(room.name);
+                for (const item of result.furniture){
+                    const request = _.findWhere(run.requests, {furniture_id: item.id, room_id: room.id});
+                    row.push(request?request.amount:0);
+                }
+                row.push(run.food);
+                row.push(run.notes);
+                data.push(row);
+            }
+        }
+
+        const output = await asyncStringifyCSV(data);
+        res.attachment('FullRunsExport.csv');
+        res.end(output);
+    } else {
+        res.locals.furniture = result.furniture;
+        res.locals.breadcrumbs = reportHelper.getBreadcrumbs('Full Runs Report');
+        res.locals.runs = _.sortBy(result.runs, 'starts_at');
+        res.locals.wideMain = true;
+        res.render('reports/runs', { pageTitle: 'Full Runs Report' });
+    }
+}
+
 async function roomsReport(req, res){
     const result = await reportHelper.getRoomData(req);
     const categories = _.uniq(_.pluck(_.pluck(result.events, 'event_category'), 'name'));
@@ -227,6 +284,7 @@ router.use(permission('Con Com'));
 
 router.get('/', listReports);
 router.get('/list', listReport);
+router.get('/runs', fullRunsReport);
 router.get('/rooms', roomsReport);
 router.get('/rooms/:id', roomList);
 router.get('/food', foodReport);

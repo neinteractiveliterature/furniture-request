@@ -14,9 +14,18 @@ function logout(req, res){
     res.redirect('/');
 }
 
+async function getCss(req, res){
+    res.setHeader('content-type', 'text/css');
+    const css = await req.models.display_text.getByName('siteCss');
+    if (css){
+        res.send(css.content);
+    } else res.send('');
+}
+
 const router = express.Router();
 
 router.get('/',  permission('login'), index);
+router.get('/css', getCss);
 router.get('/login', passport.authenticate('oauth2'));
 router.get('/logout', logout);
 

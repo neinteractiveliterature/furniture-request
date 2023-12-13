@@ -1,0 +1,71 @@
+extends ../layout
+
+block content
+    .container
+        .row
+            .col-md-2
+                button.btn.btn-outline-primary.btn-sm#exportCSV
+                    i.fa.fa-download
+                    |  Download CSV
+
+    .table-responsive
+        table.table.table-sm.table-hover.table-sorted.report-table(data-order='[[ 2, "asc" ]]')
+            thead
+                tr
+                    th Event
+                    th(style='min-width:115px') Start
+                    th(style='min-width:115px') End
+                    th(style='min-width:120px') Room
+                    for item in furniture
+                        th=item.name
+                    th(style='min-width:100px') Food
+                    th=config.get('app.specialRequestsName')
+                    th
+
+            tbody
+                for run in runs
+                    for room in run.rooms
+                        tr(
+                            data-click-object='requests'
+                            data-click-id=run.event.id+'/'+run.id
+                            class= (run.no_furniture || run.requests.length)?'table-success':'table-danger'
+                        )
+                            th= run.event.title
+                                if !config.get('app.arisiaMode')
+                                    span.badge.badge-info.ml-1= humanize(run.event.category)
+                            td(data-order=moment(run.starts_at).format(YYYYMMDDHHmmss))
+                                small= moment(run.starts_at).format('ddd, h:mm A')
+                            td(data-order=moment(run.ends_at).format(YYYYMMDDHHmmss))
+                                small= moment(run.ends_at).format('ddd, h:mm A')
+                            td=room.name
+                            for item in furniture
+                                td= _.findWhere(run.requests, {furniture_id: item.id, room_id: room.id})?_.findWhere(run.requests, {furniture_id: item.id}).amount:0
+                            td.text-truncate(style='max-width:120px')=run.food
+                            td.text-truncate(style='max-width:120px')=run.notes
+                            td
+                                a.btn.btn-sm.btn-outline-primary.mx-3.float-right(
+                                    href='/requests/'+run.event.id+'/'+run.id
+                                )
+                                    if (run.no_furniture || run.requests.length)
+
+                                        i.fa.fa-edit.fa-fw
+                                        span.d-none.d-lg-inline Edit
+
+                                    else
+                                        i.fa.fa-plus.fa-fw
+                                        span.d-none.d-lg-inline New
+
+            tfoot
+                tr
+                    th Event
+                    th(style='min-width:115px') Start
+                    th(style='min-width:115px') End
+                    th(style='min-width:120px') Room
+                    for item in furniture
+                        th=item.name
+                    th(style='min-width:100px') Food
+                    th=config.get('app.specialRequestsName')
+                    th
+
+append scripts
+    script(src='/javascripts/data-table.js')

@@ -14,7 +14,6 @@ $(function(){
     $('.table-sorted').show();
     $('.table-sorted-loading').hide();
     $('#exportCSV').click(exportCSV);
-    console.log('loaded');
 });
 
 function exportCSV(e){
