@@ -1,0 +1,38 @@
+# fly.toml app configuration file generated for arisia-furniture on 2023-12-13T14:29:45-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "arisia-furniture"
+primary_region = "bos"
+
+[build]
+
+[env]
+  PORT = "8080"
+  APP_NAME="Arisia 2024 BEO"
+  ARISIA_MODE=1
+  DATABASE_SSL=1
+  INTERCODE_CALLBACK_URL="https://arisia-beo-2.neilhosting.net/oauth_callback"
+  INTERCODE_GRAPHQL_URL="https://arisia-2024-beo.neilhosting.net/graphql"
+  INTERCODE_TOKEN_URL="https://arisia-2024-beo.neilhosting.net/oauth/token"
+  INTERCODE_URL="https://arisia-2024-beo.neilhosting.net/oauth/authorize"
+  INTERCON_BASE_URL="https://arisia-2024-beo.neilhosting.net"
+  NODE_ENV="production"
+  PGSSLMODE="noverify"
+  SESSION_TYPE="postgresql"
+  SPECIAL_REQUEST_NAME="Layout Request"
+  TZ="America/New_York"
+
+[http_service]
+  internal_port = 8080
+  force_https = false
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256

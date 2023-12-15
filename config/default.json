@@ -1,7 +1,6 @@
 {
     "app": {
         "name": "Furniture Requests",
-        "debug": false,
         "dbURL": "postgres://furniture:furniture@localhost:5432/furniture",
         "dbSSL": false,
         "dbPoolSize": 1,

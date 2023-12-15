@@ -1,0 +1,35 @@
+# fly.toml app configuration file generated for intercon-furniture on 2023-12-13T14:29:45-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "intercon-furniture"
+primary_region = "bos"
+
+[build]
+
+[env]
+  PORT = "8080"
+  DATABASE_SSL=1
+  INTERCODE_CALLBACK_URL="https://furniture.interconlarp.org/oauth_callback"
+  INTERCODE_GRAPHQL_URL="https://v.interconlarp.org/graphql"
+  INTERCODE_TOKEN_URL="https://v.interconlarp.org/oauth/token"
+  INTERCODE_URL="https://v.interconlarp.org/oauth/authorize"
+  INTERCON_BASE_URL="https://v.interconlarp.org"
+  NODE_ENV="production"
+  PGSSLMODE="noverify"
+  SESSION_TYPE="postgresql"
+  TZ="America/New_York"
+
+[http_service]
+  internal_port = 8080
+  force_https = false
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256
