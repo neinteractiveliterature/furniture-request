@@ -7,6 +7,14 @@
     label.control-label(for="furniture_description") Description
     textarea.form-control(name="furniture[description]" id="furniture_description")
         = furniture.description
+.form-group
+    label.control-label(for="furniture_parent") Parent
+    select.form-control#furniture_parent(name='furniture[parent]')
+        option(value='' selected=!furniture.parent) None
+        each item in furnitures
+            if item.id !== furniture.id
+                option(value=item.id selected=item.id===furniture.parent)=item.name
+
 
 .form-group
     label.control-label(for="furniture_max_amount") Maximum Amount

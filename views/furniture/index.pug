@@ -11,6 +11,7 @@ block content
                 if checkPermission('Hotel Liaison')
                     th Sort
                 th(style='min-width:250px') Name
+                th Parent
                 th Description
                 th Max Amount
                 th Internal
@@ -25,6 +26,9 @@ block content
                             th.handle
                                 span.fa.fa-bars
                         th= furniture.name
+                        td
+                            if furniture.parent
+                                =(_.findWhere(furnitures, {id:furniture.parent})).name
                         td= furniture.description
                         td= furniture.max_amount
                         td= furniture.internal ? 'Yes' : 'No'

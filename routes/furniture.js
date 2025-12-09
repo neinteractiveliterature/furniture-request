@@ -21,7 +21,8 @@ async function showNew(req, res){
         name: null,
         description: null,
         max_amount: 10,
-        internal: false
+        internal: false,
+        parent: null
     };
     res.locals.breadcrumbs = {
         path: [
@@ -30,7 +31,7 @@ async function showNew(req, res){
         ],
         current: 'New'
     };
-
+    res.locals.furnitures = await req.models.furniture.list();
     res.locals.csrfToken = req.csrfToken();
     if (_.has(req.session, 'furnitureData')){
         res.locals.furniture = req.session.furnitureData;
@@ -45,6 +46,7 @@ async function showEdit(req, res){
 
 
     const furniture = await req.models.furniture.get(id);
+    res.locals.furnitures = await req.models.furniture.list();
     res.locals.furniture = furniture;
     if (_.has(req.session, 'furnitureData')){
         res.locals.furniture = req.session.furnitureData;
@@ -65,6 +67,9 @@ async function create(req, res){
     const furniture = req.body.furniture;
 
     req.session.furnitureData = furniture;
+    if (furniture.parent === ''){
+        furniture.parent = null;
+    }
 
     try {
         await req.models.furniture.create(furniture);
@@ -81,6 +86,10 @@ async function update(req, res){
     const id = req.params.id;
     const furniture = req.body.furniture;
     req.session.furnitureData = furniture;
+    console.log(furniture)
+    if (furniture.parent === ''){
+        furniture.parent = null;
+    }
 
     const current = await req.models.furniture.get(id);
     furniture.display_order = current.display_order;

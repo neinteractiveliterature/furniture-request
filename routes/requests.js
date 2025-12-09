@@ -36,10 +36,11 @@ async function show(req, res){
     const eventId = req.params.eventId;
     const backto = req.query.backto;
 
-    const { intercodeRun, localRun, furniture, requests, requestShowNote, requestFoodNote, requestSpecialNote } = await async.parallel({
+    const { intercodeRun, localRun, furniture, furnitureTree, requests, requestShowNote, requestFoodNote, requestSpecialNote } = await async.parallel({
         intercodeRun: async () => await req.intercode.getRun(eventId, runId),
         localRun: async () => await req.models.runs.get(runId),
-        furniture: async () => await req.models.furniture.list(),
+        furniture: async() => await req.models.furniture.list(),
+        furnitureTree: async () => await furnitureHelper.getFurnitureTree(),
         requests: async () => await req.models.requests.listByRun(runId),
         requestShowNote: async () => await req.models.display_text.getByName('requestShow'),
         requestFoodNote: async () => await req.models.display_text.getByName('requestFood'),
@@ -53,7 +54,8 @@ async function show(req, res){
         res.locals.run.food = localRun.food;
         res.locals.run.no_furniture = localRun.no_furniture;
     }
-    res.locals.furniture = furniture || [];
+    res.locals.furniture = furnitureTree || [];
+
     if (_.has(req.session, 'requestsData')){
         res.locals.requests = req.session.requestsData;
         res.locals.run.notes = req.session.requestsData.run.notes;

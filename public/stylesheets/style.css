@@ -33,3 +33,12 @@ body, .popover {
 .report-table {
     font-size: 0.8rem;
 }
+
+[aria-expanded="true"] .fa-chevron-down,
+[aria-expanded="false"] .fa-chevron-up,
+[aria-expanded="true"] .fa-plus,
+[aria-expanded="false"] .fa-minus,
+[aria-expanded="true"] .expand-text,
+[aria-expanded="false"] .expand-text-shown {
+    display:none;
+}
