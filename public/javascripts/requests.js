@@ -1,38 +1,33 @@
 $(function () {
     $('[data-toggle="popover"]').popover();
-    $('.furniture-children-row').on('show.bs.collapse', showFurnitureChildren);
-    $('.furniture-children-row').on('hide.bs.collapse', hideFurnitureChildren);
+    $('.collapse-toggle').on('click', toggleItem);
 });
 
-
-function showFurnitureChildren(e){
-    const $parentRow = $(this).closest('.furniture-row');
-
+function toggleItem(e){
+    e.preventDefault();
+    const target = $(this).data('target');
+    const $target = $(target);
+    const $parentRow = $(this).closest('.furniture-parent-row');
     const $parentInput = $parentRow.find('.furniture-item-quantity').first();
-    const parentVal =$parentInput.val();
-    $parentInput.val(null);
 
-    $parentRow.find('.furniture-item-quantity').first().hide();
+    if ($target.hasClass('show')){
+        $target.collapse('hide');
+        let childVal = 0;
+        $target.find('.furniture-item-quantity').each(function(){
+            if ($(this).val()){
+                childVal += Number($(this).val());
+            }
+            $(this).val(null);
+        });
+        $parentInput.val(childVal);
+        $parentInput.show();
+        $target.find('.furniture-children-row').collapse('hide');
 
-    const $childInput =  $parentRow.find('.furniture-children-row').find('.furniture-row').first().find('.furniture-item-quantity').first();
-    $childInput.val(parentVal);
-}
-
-function hideFurnitureChildren(e){
-    const $parentRow = $(this).closest('.furniture-row');
-
-    let childVal = 0;
-    $parentRow.find('.furniture-children-row').find('.furniture-row').each(function() {
-        $childInput = $(this).find('.furniture-item-quantity');
-        if ($childInput.val()){
-            childVal += Number($childInput.val());
-        }
-        $childInput.val(null);
-    });
-
-    const $parentInput = $parentRow.find('.furniture-item-quantity').first();
-    $parentInput.val(childVal);
-
-    $parentRow.find('.furniture-item-quantity').first().show();
-
+    } else {
+        $target.collapse('show');
+        $target.find('.furniture-item-quantity').first().val($parentInput.val());
+        $target.find('.furniture-item-quantity').show();
+        $parentInput.val(null);
+        $parentInput.hide();
+    }
 }

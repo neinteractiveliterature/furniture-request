@@ -8,7 +8,6 @@ $(function(){
         e.preventDefault();
         const object = $(this).attr('data-click-object');
         const id = $(this).attr('data-click-id');
-        console.log('/'+ object + '/' + id);
         window.location.href='/'+ object + '/' + id;
     });
     $('.table-sorted').show();

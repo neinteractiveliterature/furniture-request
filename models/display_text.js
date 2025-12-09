@@ -8,7 +8,6 @@ exports.get = async function(id){
 };
 
 exports.getByName = async function(name){
-    console.log('getting ' + name);
     return database.querySingle('select * from display_text where name = $1', [name]);
 };
 

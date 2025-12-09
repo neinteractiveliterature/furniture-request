@@ -55,7 +55,6 @@ async function show(req, res){
         res.locals.run.no_furniture = localRun.no_furniture;
     }
     res.locals.furniture = furnitureTree || [];
-
     if (_.has(req.session, 'requestsData')){
         res.locals.requests = req.session.requestsData;
         res.locals.run.notes = req.session.requestsData.run.notes;

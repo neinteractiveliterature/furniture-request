@@ -80,14 +80,15 @@ mixin furnitureList(eventId, room, requests, furniture, depth)
                     if (requests['room-'+room.id].furniture['item-'+child.id]){
                         count += Number(requests['room-'+room.id].furniture['item-'+child.id]);
                     }
-                    countChildRequests(child.children);
+                    count += countChildRequests(child.children);
                 }
                 return count;
             }
             item.childRequests = countChildRequests(item.children);
-            console.log(item)
 
-        .furniture-row
+        .furniture-parent-row(
+            id=`furniture-room-${room.id}-item-${item.id}`
+        )
             .row.border-top.py-1
                 +furnitureEntry(room, item, requests, run.event.id, depth)
             if item.children.length
@@ -130,9 +131,8 @@ mixin furnitureEntry(room, item, requests, eventId, depth)
             )= requests['room-'+room.id].furniture['item-'+item.id] || 0
     if item.children.length
         .col.text-right
-            a.btn.btn-sm.btn-outline-primary(
-                data-toggle="collapse"
-                href=`#furniture-room-${room.id}-item-${item.id}-children`
+            button.btn.btn-sm.btn-outline-primary.collapse-toggle(
+                data-target=`#furniture-room-${room.id}-item-${item.id}-children`
                 role="button"
                 aria-expanded=childrenRequests?'true':'false'
                 aria-controls=`furniture-room-${room.id}-item-${item.id}-children`

@@ -86,7 +86,6 @@ async function update(req, res){
     const id = req.params.id;
     const furniture = req.body.furniture;
     req.session.furnitureData = furniture;
-    console.log(furniture)
     if (furniture.parent === ''){
         furniture.parent = null;
     }
