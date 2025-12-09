@@ -12,6 +12,7 @@ function toggleItem(e){
 
     if ($target.hasClass('show')){
         $target.collapse('hide');
+        $(this).attr('aria-expanded', 'false');
         let childVal = 0;
         $target.find('.furniture-item-quantity').each(function(){
             if ($(this).val()){
@@ -19,13 +20,24 @@ function toggleItem(e){
             }
             $(this).val(null);
         });
-        $parentInput.val(childVal);
+        if (childVal){
+            $parentInput.val(childVal);
+        } else {
+            $parentInput.val(null);
+        }
         $parentInput.show();
         $target.find('.furniture-children-row').collapse('hide');
 
     } else {
         $target.collapse('show');
-        $target.find('.furniture-item-quantity').first().val($parentInput.val());
+        $(this).attr('aria-expanded', 'true');
+
+        if ($parentInput.val()){
+            $target.find('.furniture-item-quantity').first().val(Number($parentInput.val()));
+        } else {
+            $target.find('.furniture-item-quantity').first().val(null);
+
+        }
         $target.find('.furniture-item-quantity').show();
         $parentInput.val(null);
         $parentInput.hide();

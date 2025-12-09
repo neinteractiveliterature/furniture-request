@@ -134,7 +134,7 @@ mixin furnitureEntry(room, item, requests, eventId, depth)
             button.btn.btn-sm.btn-outline-primary.collapse-toggle(
                 data-target=`#furniture-room-${room.id}-item-${item.id}-children`
                 role="button"
-                aria-expanded=childrenRequests?'true':'false'
+                aria-expanded=!!item.childRequests?'true':'false'
                 aria-controls=`furniture-room-${room.id}-item-${item.id}-children`
             )
                 i.fa.fa-chevron-down
