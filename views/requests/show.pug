@@ -73,33 +73,32 @@ block content
 
 mixin furnitureList(eventId, room, requests, furniture, depth)
     for item in furniture
+        -
+            function countChildRequests(children){
+                let count = 0;
+                for (const child of children){
+                    if (requests['room-'+room.id].furniture['item-'+child.id]){
+                        count += Number(requests['room-'+room.id].furniture['item-'+child.id]);
+                    }
+                    countChildRequests(child.children);
+                }
+                return count;
+            }
+            item.childRequests = countChildRequests(item.children);
+            console.log(item)
+
         .furniture-row
             .row.border-top.py-1
                 +furnitureEntry(room, item, requests, run.event.id, depth)
             if item.children.length
-                -
-                    let childrenRequests = 0;
-                    for (const child of item.children){
-                        if (requests['room-'+room.id].furniture['item-'+child.id]){
-                            console.log('here')
-                            childrenRequests += Number(requests['room-'+room.id].furniture['item-'+child.id]);
-                        }
-                    }
                 div.collapse.furniture-children-row(
-                    class=!!childrenRequests && 'show'
+                    class=!!item.childRequests && 'show'
                     id=`furniture-room-${room.id}-item-${item.id}-children`
 
                 )
                     +furnitureList(eventId, room, requests, item.children, depth+1)
 
 mixin furnitureEntry(room, item, requests, eventId, depth)
-    -
-        let childrenRequests = 0;
-        for (const child of item.children){
-            if (requests['room-'+room.id].furniture['item-'+child.id]){
-                childrenRequests += Number(requests['room-'+room.id].furniture['item-'+child.id]);
-            }
-        }
     .col-md-3.offset-md-1
         span(
            style=`padding-left: ${10*depth}px`
@@ -116,7 +115,7 @@ mixin furnitureEntry(room, item, requests, eventId, depth)
     .col-md-3
         if checkPermission({permission: 'GM Coordinator', eventId: eventId})
             input.form-control.form-control-sm.furniture-item-quantity(
-                style=!!childrenRequests && 'display:none'
+                style=!!item.childRequests && 'display:none'
                 type="number"
                 min=0
                 max=item.max_amount
@@ -127,7 +126,7 @@ mixin furnitureEntry(room, item, requests, eventId, depth)
             div.invalid-feedback= 'Please choose a value up to ' + item.max_amount
         else
             span(
-                style=!!childrenRequests && 'display:none'
+                style=!!item.childRequests && 'display:none'
             )= requests['room-'+room.id].furniture['item-'+item.id] || 0
     if item.children.length
         .col.text-right
