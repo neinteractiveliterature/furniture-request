@@ -248,7 +248,10 @@ async function furnitureReport(req, res){
 
     if (req.query.export){
         const data = [['Event', 'Type', 'Run', 'Room', 'Amount']];
-        requests.forEach(function(request){
+        for (const request in requests){
+            if (!request.run || !request.run.rooms){
+                continue
+            }
             data.push([
                 request.event.title,
                 furnitureHelper.humanize(request.event.event_category.name),
@@ -256,7 +259,7 @@ async function furnitureReport(req, res){
                 _.findWhere(request.run.rooms, {id: request.room_id}).name,
                 request.amount
             ]);
-        });
+        }
         const output = await asyncStringifyCSV(data);
         res.attachment(`Furniture Usage - ${furniture.name}.csv`);
         res.end(output);

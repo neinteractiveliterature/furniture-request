@@ -19,7 +19,7 @@ block content
                     th(style='min-width:132px') Request Entered
             tbody
                 for request in requests
-                    if !request.run
+                    if !request.run || !request.run.rooms
                         - continue;
                     tr(
                         data-click-object='requests'
