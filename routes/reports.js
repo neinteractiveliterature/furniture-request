@@ -249,7 +249,7 @@ async function furnitureReport(req, res){
     if (req.query.export){
         const data = [['Event', 'Type', 'Run', 'Room', 'Amount']];
         for (const request in requests){
-            if (!request.run || !request.run.rooms){
+            if (!request.run || !request.run.rooms.length){
                 continue
             }
             data.push([
