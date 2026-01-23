@@ -30,7 +30,12 @@ block content
                         td= request.event.title
                         td(data-order=moment(request.run.starts_at).format(YYYYMMDDHHmmss))= moment(request.run.starts_at).format('ddd, h:mm A')
                         td
-                            small= _.findWhere(request.run.rooms, {id: request.room_id}).name
+                            - const room = _.findWhere(request.run.rooms, {id: request.room_id})
+                            if room
+                                small= room.name
+                            else
+                                i None
+
                         td= request.amount
                         td
                             if (checkPermission({permission: 'GM Coordinator', eventId: request.event.id}))

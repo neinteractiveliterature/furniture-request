@@ -252,11 +252,12 @@ async function furnitureReport(req, res){
             if (!request.run || !request.run.rooms.length){
                 continue
             }
+            const room = _.findWhere(request.run.rooms, {id: request.room_id})
             data.push([
                 request.event.title,
                 furnitureHelper.humanize(request.event.event_category.name),
                 moment(request.run.starts_at).format('ddd, h:mm A'),
-                _.findWhere(request.run.rooms, {id: request.room_id}).name,
+                room?.name,
                 request.amount
             ]);
         }
