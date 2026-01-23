@@ -19,6 +19,8 @@ block content
                     th(style='min-width:132px') Request Entered
             tbody
                 for request in requests
+                    if !request.run
+                        - continue;
                     tr(
                         data-click-object='requests'
                         data-click-id=request.event.id+'/'+request.run_id
