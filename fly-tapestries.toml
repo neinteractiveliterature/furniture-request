@@ -1,0 +1,36 @@
+# fly.toml app configuration file generated for tapestries-furniture on 2026-03-23T11:47:25-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'tapestries-furniture'
+primary_region = 'sjc'
+
+[build]
+
+[env]
+  APP_NAME = 'Tapestries 2026 Furniture Requests'
+  DATABASE_SSL = '1'
+  INTERCODE_CALLBACK_URL = 'https://tapestries-furniture.fly.dev/oauth_callback'
+  INTERCODE_GRAPHQL_URL = 'https://2026.tapestrieslarp.org/graphql'
+  INTERCODE_TOKEN_URL = 'https://2026.tapestrieslarp.org/oauth/token'
+  INTERCODE_URL = 'https://2026.tapestrieslarp.org/oauth/authorize'
+  INTERCON_BASE_URL = 'https://2026.tapestrieslarp.org'
+  NODE_ENV = 'production'
+  PGSSLMODE = 'noverify'
+  PORT = '3000'
+  SESSION_TYPE = 'postgresql'
+  SPECIAL_REQUEST_NAME = 'Layout Request'
+  TZ = 'America/Los_Angeles'
+
+[http_service]
+  internal_port = 3000
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '256mb'
+  cpus = 1
+  memory_mb = 256
