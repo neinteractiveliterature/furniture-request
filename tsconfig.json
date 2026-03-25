@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "outDir": "dist"
+  },
+  "include": ["./*", "bin/**/*", "config/**/*", "lib/**/*", "migrations/**/*", "models/**/*", "routes/**/*", "views/**/*"]
+}
