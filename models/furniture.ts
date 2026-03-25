@@ -1,23 +1,31 @@
-'use strict';
-const database = require('../lib/database');
-const validator = require('validator');
+import * as database from '../lib/database';
+import validator from 'validator';
 
-exports.get = async function(id){
-    return database.querySingle('select * from furniture where id = $1', [id]);
+export type Furniture = {
+  name?: string;
+  description?: string;
+  max_amount: number;
+  internal?: boolean;
+  display_order: number;
+  parent?: number;
 };
 
-exports.list = async function(){
-    return database.queryRows('select * from furniture order by display_order');
+export const get = async function(id: number){
+    return database.querySingle<Furniture>('select * from furniture where id = $1', [id]);
 };
 
-exports.listByParent = async function(parentId){
+export const list = async function(){
+    return database.queryRows<Furniture[]>('select * from furniture order by display_order');
+};
+
+export const listByParent = async function(parentId?: number | null){
     if (!parentId){
-        return database.queryRows('select * from furniture where parent is null order by display_order');
+        return database.queryRows<Furniture>('select * from furniture where parent is null order by display_order');
     }
-    return database.queryRows('select * from furniture where parent = $1 order by display_order', [parentId]);
-}
+    return database.queryRows<Furniture>('select * from furniture where parent = $1 order by display_order', [parentId]);
+};
 
-exports.create = async function(data){
+export const create = async function(data: Omit<Furniture, 'id'>){
     if (!validate(data)){
         throw new Error('Invalid Data');
     }
@@ -27,7 +35,7 @@ exports.create = async function(data){
     return database.insertReturningId(query, dataArr);
 };
 
-exports.update = async function(id, data){
+export const update = async function(id: number, data: Omit<Furniture, 'id'>){
     if (!validate(data)){
         throw new Error('Invalid Data');
     }
@@ -37,7 +45,7 @@ exports.update = async function(id, data){
     return database.query(query, dataArr);
 };
 
-exports.delete = async function(id){
+export const remove = async function(id: number){
     const query = 'delete from furniture where id = $1';
     return database.query(query, [id]);
 };

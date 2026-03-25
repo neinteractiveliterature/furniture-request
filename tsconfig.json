@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "outDir": "dist"
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "skipLibCheck": true
   },
   "include": ["./*", "bin/**/*", "config/**/*", "lib/**/*", "migrations/**/*", "models/**/*", "routes/**/*", "views/**/*"]
 }

@@ -1,16 +1,10 @@
-'use strict';
-const _ = require('underscore');
-const pluralize = require('pluralize');
-const async = require('async');
-const pug = require('pug');
+import _ from 'underscore';
+import pluralize from 'pluralize';
+import async from 'async';
+import pug from 'pug';
+import models from './models';
 
-const models = {
-    runs: require('../models/runs'),
-    requests: require('../models/requests'),
-    furniture: require('../models/furniture')
-};
-
-async function getRunList(events) {
+export async function getRunList(events) {
     const runsWithEvent = events.flatMap((event) => event.runs.map((run) => ({
         ...run,
         event: {
@@ -53,7 +47,7 @@ function fillRunDetails(run, requests, incompleteRunData){
     }
 }
 
-function humanize(str){
+export function humanize(str){
     str = str.replace(/_/, ' ');
     const lower = String(str).toLowerCase();
     return lower.replace(/(^| )(\w)/g, function(x) {
@@ -61,7 +55,7 @@ function humanize(str){
     });
 }
 
-function teamMembers(event){
+export function teamMembers(event){
     let str = humanize(event.event_category.team_member_name);
     const team_members = getTeamMembers(event.team_members);
     if (team_members.length !== 1){
@@ -78,7 +72,7 @@ function getTeamMembers(members){
     return _.pluck(team_members, 'user_con_profile');
 }
 
-function setSection(section){
+export function setSection(section){
     return function(req, res, next){
         res.locals.siteSection = section;
         next();
@@ -97,11 +91,11 @@ function findLatest(time, requests){
     return time;
 }
 
-function renderText(content, res){
+export function renderText(content, res){
     return pug.render(content, res.locals);
 }
 
-async function getFurnitureTree(parentId = null){
+export async function getFurnitureTree(parentId = null){
     const furniture = [];
     const items = await models.furniture.listByParent(parentId);
     for (const item of items){
@@ -110,12 +104,3 @@ async function getFurnitureTree(parentId = null){
     }
     return furniture;
 }
-
-module.exports = {
-    getRunList: getRunList,
-    humanize: humanize,
-    setSection: setSection,
-    teamMembers: teamMembers,
-    renderText: renderText,
-    getFurnitureTree: getFurnitureTree
-};

@@ -8,21 +8,26 @@
     "extends": [
         "eslint:recommended",
         "plugin:node/recommended",
-        "plugin:@graphql-eslint/recommended"
+        "plugin:@graphql-eslint/recommended",
+        "plugin:@typescript-eslint/recommended"
     ],
-    "parser": "espree",
-    "parserOptions": {
-        "ecmaVersion": 2020
+    "globals": {
+        "__dirname": "readonly"
     },
+    "parser": "@typescript-eslint/parser",
     "plugins": [
-        "promise"
+        "promise",
+        "@typescript-eslint"
     ],
+    "root": true,
     "rules": {
         "no-var": "error",
         "prefer-const": "error",
         "no-console": "off",
         "no-empty-pattern": 2,
         "no-empty": "off",
+        "node/no-missing-import": "off",
+        "node/no-unpublished-import": "off",
         "indent": [
             "error",
             4,

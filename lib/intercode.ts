@@ -1,29 +1,27 @@
-const config = require('config');
-const { GraphQLClient } = require('graphql-request');
-const _ = require('underscore');
-const { URL } = require('url');
-const c = require('ansi-colors');
-// eslint-disable-next-line node/no-unpublished-require
-const { parse } = require('graphql/language');
-//var passport = require(passport);
+import config from 'config';
+import { ClientError, GraphQLClient } from 'graphql-request';
+import _ from 'underscore';
+import { URL } from 'url';
+import c from 'ansi-colors';
+import { ExecutableDefinitionNode, parse } from 'graphql/language';
 
 // Stolen from the 3.x series of graphql-request.  This is a no-op tagged template function that
 // exists just so that graphql-eslint can find the GraphQL template strings in this file for
 // linting.
-function gql(chunks, ...variables) {
+function gql(chunks: TemplateStringsArray, ...variables: unknown[]) {
     return chunks.reduce(
         (accumulator, chunk, index) => `${accumulator}${chunk}${index in variables ? variables[index] : ''}`,
         ''
     );
 }
 
-class InvalidTokenError {
+export class InvalidTokenError {
 }
 
-async function graphQLRequest(client, query, variables = undefined){
+async function graphQLRequest(client: GraphQLClient, query: string, variables: unknown = undefined){
     try {
         const parsedQuery = parse(query);
-        const queryName = parsedQuery.definitions[0].name?.value;
+        const queryName = (parsedQuery.definitions[0] as ExecutableDefinitionNode).name?.value;
         const start = new Date();
         const result = await client.request(query, variables);
         if (config.get('app.debug')){
@@ -31,14 +29,14 @@ async function graphQLRequest(client, query, variables = undefined){
         }
         return result;
     } catch (err) {
-        if(err.response?.status === 401){
-            throw new Intercode.InvalidTokenError();
+        if((err as ClientError).response?.status === 401){
+            throw new InvalidTokenError();
         }
         throw err;
     }
 }
 
-function getClient(token) {
+function getClient(token: string) {
     return new GraphQLClient(
         config.get('app.graphqlURL'),
         {
@@ -52,14 +50,18 @@ function getConventionDomain() {
     return new URL(config.get('app.interconBaseURL')).hostname;
 }
 
-class Intercode {
-    constructor(accessToken, refreshToken) {
+export default class Intercode {
+    accessToken: string;
+    refreshToken?: string;
+    client: GraphQLClient;
+
+    constructor(accessToken: string, refreshToken?: string) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.client = getClient(this.accessToken);
     }
 
-    request(query, variables = undefined) {
+    request(query: string, variables: unknown = undefined) {
         return graphQLRequest(this.client, query, variables);
     }
 
@@ -74,7 +76,7 @@ class Intercode {
         return this.request(query);
     }
 
-    async getPermissions(userId) {
+    async getPermissions(userId: string) {
 
         const query = gql`query getPermissions($conventionDomain: String!, $userId: ID!) {
             user(id: $userId) {
@@ -102,7 +104,7 @@ class Intercode {
         };
     }
 
-    async getMemberEvents(userId) {
+    async getMemberEvents(userId: string) {
         const query = gql`query getMemberEvents($userId: ID!, $conventionDomain: String!) {
             convention: conventionByDomain(domain: $conventionDomain) {
                 user_con_profile_by_user_id(userId: $userId) {
@@ -151,7 +153,7 @@ class Intercode {
         return _.pluck(result.convention.user_con_profile_by_user_id.team_members, 'event');
     }
 
-    async getRun(eventId, runId) {
+    async getRun(eventId: string, runId: string) {
         const query = gql`query getRun($conventionDomain: String!, $eventId: ID!, $runId: ID!) {
             convention: conventionByDomain(domain: $conventionDomain) {
                 event(id: $eventId) {
@@ -196,7 +198,7 @@ class Intercode {
             const result = await this.request(query, variables);
             return result.convention.event.run;
         } catch (err) {
-            if (err.toString().match(/Event not found/)) {
+            if ((err as Error).toString().match(/Event not found/)) {
                 return undefined;
             }
         }
@@ -269,103 +271,3 @@ class Intercode {
         return result.convention;
     }
 }
-
-
-// TODO: possibly delete?  This is unused anywhere in the app
-// Intercode.prototype.getSignups = async function(userId){
-//     const query = gql`query getSignups($conventionDomain: String!, $userId: Int!) {
-//         convention: conventionByDomain(domain: $conventionDomain) {
-//             user_con_profile_by_user_id(userId: $userId) {
-//                 signups {
-//                     id
-//                     state
-//                     bucket_key
-//                     counted
-
-//                     run {
-//                         id
-//                         starts_at
-//                         ends_at
-
-//                         rooms {
-//                             id
-//                             name
-//                         }
-
-//                         event {
-//                             id
-//                             title
-//                             length_seconds
-//                             event_category {
-//                                 name
-//                                 team_member_name
-//                             }
-//                             team_members {
-//                                 id
-//                                 display_team_member
-//                                 user_con_profile {
-//                                     id
-//                                     name_without_nickname
-//                                     email
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }`;
-//     const variables = {
-//         userId,
-//         conventionDomain: getConventionDomain()
-//     };
-//     const result = await request(this.accessToken, query, variables);
-//     return result.convention.user_con_profile_by_user_id.signups;
-// };
-
-// TODO: Possibly delete, this seems unused
-// Intercode.prototype.getEvent = async function(id){
-//     const query = gql`query getEvent($conventionDomain: String!, $id: Int!) {
-//         convention: conventionByDomain(domain: $conventionDomain) {
-//             event(id: $id) {
-//                 id
-//                 title
-//                 length_seconds
-//                 event_category {
-//                     name
-//                     team_member_name
-//                 }
-
-//                 runs {
-//                     id
-//                     starts_at
-//                     ends_at
-//                     rooms {
-//                         id
-//                         name
-//                     }
-//                 }
-
-//                 team_members {
-//                     id
-//                     display_team_member
-//                     user_con_profile {
-//                         id
-//                         name_without_nickname
-//                         email
-//                     }
-//                 }
-//             }
-//         }
-//     }`;
-//     const variables = {
-//         conventionDomain: getConventionDomain(),
-//         id: id,
-//     };
-//     const result = await request(this.accessToken, query, variables);
-//     return result.convention.event;
-// };
-
-Intercode.InvalidTokenError = InvalidTokenError;
-
-module.exports = Intercode;

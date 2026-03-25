@@ -1,34 +1,54 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const { json: jsonParser, urlencoded: urlEncodedParser } = require('body-parser');
-const flash = require('express-flash');
-const session = require('express-session');
-const config = require('config');
-const _ = require('underscore');
-const moment = require('moment');
-const methodOverride = require('method-override');
-const redis = require('redis');
-const passport = require('passport');
-const { URL } = require('url');
-const OAuth2Strategy = require('passport-oauth2').Strategy;
+import createError from 'http-errors';
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import { json as jsonParser, urlencoded as urlEncodedParser } from 'body-parser';
+import flash from 'express-flash';
+import session, { SessionOptions } from 'express-session';
+import config from 'config';
+import _ from 'underscore';
+import moment from 'moment';
+import methodOverride from 'method-override';
+import redis from 'redis';
+import passport from 'passport';
+import { URL } from 'url';
+import PassportOAuth2, { StrategyOptionsWithRequest, VerifyCallback } from 'passport-oauth2';
+import ConnectRedis from 'connect-redis';
+import ConnectPgSimple from 'connect-pg-simple';
 
-const models = require('./lib/models');
+import models from './lib/models';
 
-const Intercode = require('./lib/intercode');
-const permission = require('./lib/permission');
-const database = require('./lib/database');
+import Intercode, { InvalidTokenError } from './lib/intercode';
+import permission from './lib/permission';
+import * as database from './lib/database';
 
-const furnitureHelper = require('./lib/furniture-helper');
+import * as furnitureHelper from './lib/furniture-helper';
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-const requestsRouter = require('./routes/requests');
-const furnitureRouter = require('./routes/furniture');
-const reportsRouter = require('./routes/reports');
-const textRouter = require('./routes/text');
+import indexRouter from './routes/index';
+import usersRouter from './routes/users';
+import requestsRouter from './routes/requests';
+import furnitureRouter from './routes/furniture';
+import reportsRouter from './routes/reports';
+import textRouter from './routes/text';
+import { User } from './models/user';
+import { ErrorRequestHandler } from 'express-serve-static-core';
+
+
+declare module 'express-serve-static-core' {
+    interface Request {
+        models: unknown,
+        intercode: Intercode
+    }
+}
+
+declare module 'express-session' {
+    interface SessionData {
+        accessToken?: string
+    }
+}
+
+const OAuth2Strategy = PassportOAuth2.Strategy;
 
 const app = express();
 
@@ -52,7 +72,7 @@ app.use(methodOverride(function(req){
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const sessionConfig = {
+const sessionConfig: SessionOptions = {
     secret: config.get('app.sessionSecret'),
     rolling: true,
     saveUninitialized: true,
@@ -61,7 +81,7 @@ const sessionConfig = {
 
 switch (config.get('app.sessionType')){
     case 'redis': {
-        const RedisStore = require('connect-redis')(session);
+        const RedisStore = ConnectRedis(session);
         let redisClient = null;
         if (config.get('app.redisURL')){
             const redisToGo   = new URL(config.get('app.redisURL'));
@@ -76,7 +96,7 @@ switch (config.get('app.sessionType')){
     }
 
     case 'postgresql': {
-        const pgSession = require('connect-pg-simple')(session);
+        const pgSession = ConnectPgSimple(session);
         sessionConfig.store = new pgSession({
             pool: database.pool,
             tableName: 'session'
@@ -98,11 +118,11 @@ app.use(permission());
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser(function(user, cb) {
+passport.serializeUser(function(user: User, cb) {
     cb(null, user.id);
 });
 
-passport.deserializeUser(async function(id, cb) {
+passport.deserializeUser(async function(id: number, cb) {
     try {
         const user = await models.user.get(id);
         cb(null, user);
@@ -111,20 +131,27 @@ passport.deserializeUser(async function(id, cb) {
     }
 });
 
-const passportClient = new OAuth2Strategy(config.get('auth'),
-    async function(req, accessToken, refreshToken, profile, cb) {
-        try {
-            const user = await models.user.findOrCreate({
-                name: profile.name,
-                intercode_id: profile.id,
-                email: profile.email
-            });
-            req.session.accessToken = accessToken;
-            cb(null, user);
-        } catch (err) {
-            cb(err);
-        }
-    }
+const passportClient = new OAuth2Strategy(
+  config.get('auth') as StrategyOptionsWithRequest,
+  async function (
+      req: Express.Request,
+      accessToken: string,
+      refreshToken: string,
+      profile: { name: string, id: string, email: string },
+      cb: VerifyCallback,
+  ) {
+      try {
+          const user = await models.user.findOrCreate({
+              name: profile.name,
+              intercode_id: profile.id,
+              email: profile.email,
+          });
+          req.session.accessToken = accessToken;
+          cb(null, user);
+      } catch (err) {
+          cb(err);
+      }
+  },
 );
 
 // as far as I can tell, passport doesn't support promise style calls, so we'll have to call
@@ -179,9 +206,9 @@ app.use(function(req, res, next) {
 // error handler
 // Disabling no-unused-vars because Express cares about the arity of error handlers, so we need to
 // accept the next param even though we don't use it
-// eslint-disable-next-line no-unused-vars
-app.use(function(err, req, res, next) {
-    if (err instanceof Intercode.InvalidTokenError) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use(function(err, req, res, _next) {
+    if (err instanceof InvalidTokenError) {
         req.logout();
         console.log('deleting token');
         delete req.session.accessToken;
@@ -195,6 +222,6 @@ app.use(function(err, req, res, next) {
     // render the error page
     res.status(err.status || 500);
     res.render('error');
-});
+} satisfies ErrorRequestHandler);
 
-module.exports = app;
+export default app;
