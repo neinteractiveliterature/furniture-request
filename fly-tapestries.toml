@@ -11,7 +11,7 @@ primary_region = 'sjc'
 [env]
   APP_NAME = 'Tapestries 2026 Furniture Requests'
   DATABASE_SSL = '1'
-  INTERCODE_CALLBACK_URL = 'https://tapestries-furniture.fly.dev/oauth_callback'
+  INTERCODE_CALLBACK_URL = 'https://furniture.tapestrieslarp.org/oauth_callback'
   INTERCODE_GRAPHQL_URL = 'https://2026.tapestrieslarp.org/graphql'
   INTERCODE_TOKEN_URL = 'https://2026.tapestrieslarp.org/oauth/token'
   INTERCODE_URL = 'https://2026.tapestrieslarp.org/oauth/authorize'
